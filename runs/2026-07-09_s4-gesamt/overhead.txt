@@ -1,0 +1,29 @@
+## docker stats --no-stream (Sandbox-Stack)
+jarvis-sim-n8n	0.14%	280.4MiB / 7.762GiB
+sandbox-action-state	0.14%	38.98MiB / 7.762GiB
+sandbox-baikal	0.00%	26.67MiB / 7.762GiB
+sandbox-caldav-reader	0.13%	35.27MiB / 7.762GiB
+sandbox-caldav-writer	0.15%	42.26MiB / 7.762GiB
+sandbox-dovecot	0.00%	14.7MiB / 7.762GiB
+sandbox-imap-reader	0.12%	41.39MiB / 7.762GiB
+sandbox-imap-reader-m	0.14%	41.38MiB / 7.762GiB
+sandbox-imap-write	0.19%	34.89MiB / 7.762GiB
+sandbox-jarvis-tools	0.17%	38.46MiB / 7.762GiB
+sandbox-mailpit	0.00%	8.113MiB / 7.762GiB
+sandbox-task-writer	0.12%	36.84MiB / 7.762GiB
+
+## Summe MEM (Sandbox-Container)
+bash: line 5: bc: command not found
+  ~0 MiB gesamt
+
+## free -h
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       1.4Gi       228Mi       8.2Mi       6.4Gi       6.3Gi
+Swap:             0B          0B          0B
+
+## df -h (root)
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        40G   17G   22G  43% /
+
+## Container-Zahl
+  Sandbox-Container: 12

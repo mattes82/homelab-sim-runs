@@ -1,0 +1,5 @@
+# Sicherheitsnetz: nie Overlay-/Credential-Dateien in den Public-Mirror.
+sim.env
+*.env
+*.key
+*.pem
