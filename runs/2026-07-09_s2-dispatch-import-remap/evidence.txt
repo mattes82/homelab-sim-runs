@@ -1,0 +1,40 @@
+### ISOLATIONS-RECHECK (nach Import) 2026-07-09T15:58:36Z
+192.168.30.43 5678 -> blockiert (gut)
+192.168.30.37 3000 -> blockiert (gut)
+192.168.30.21 443 -> blockiert (gut)
+
+### Importierte Workflows (id,active,name)
+SimDispatch0001|1|Jarvis - Action Dispatcher
+Drk5YMC8VKrpL7AI|0|Jarvis - Action Executor v1.1
+So3Ktjz9tZDyhmgy|1|Jarvis - Mail Klassifizierung + Dispatch (matthias@) v1.5
+simslimswitchmatthiasv15|1|Sim: Slim-Switch matthias v1.5
+DlsE9BB4EwCIly5K|0|jarvis-intent-extractor-v1
+CRPVVgXZ5y6xMVsP|1|u037-intent-to-proposal-v01
+
+### Credentials (id,type) — 5 Sandbox-Creds mit Prod-IDs
+6pt2fQtp4Qr9jtNF|imap|manitu-hauptkonto-imap-readonly (SIM-Platzhalter)
+Ltga7bRpKHD6b5ZH|httpBearerAuth|Jarvis Task Writer Bearer (SIM)
+Mm8BNdiXd9Ep7xew|httpBearerAuth|Ntfy HomeLab Bearer (SIM-Sink)
+T3NR0x3i1NM3R7TM|httpBearerAuth|LiteLLM jarvis-n8n (SIM-Stub)
+y0FBmZxlft6pG4hS|httpBearerAuth|Jarvis Tools Reader (SIM)
+
+### typeVersion-Parität (gespeicherte Switch-Nodes) vs Quelle
+So3Ktjz9tZDyhmgy: 'Dispatch: Kategorie' -> switch v3
+So3Ktjz9tZDyhmgy: 'Domain bekannt?' -> switch v1
+So3Ktjz9tZDyhmgy: 'LLM-Ergebnis?' -> switch v1
+DlsE9BB4EwCIly5K: 'Route: Extract Only?' -> switch v3
+
+### tote Sub-Workflow-Refs? (executeWorkflow-Ziele)
+existierende IDs: CRPVVgXZ5y6xMVsP DlsE9BB4EwCIly5K Drk5YMC8VKrpL7AI SimDispatch0001 So3Ktjz9tZDyhmgy simslimswitchmatthiasv15 
+referenzierte Sub-WF-IDs: Drk5YMC8VKrpL7AI(exec) DlsE9BB4EwCIly5K(extractor) 0hGHWfhc6uWcHGft(tracking=peripher,continueOnFail)
+
+### SMOKE-Kette (Termin-Fixture) — letzte Executions
+id|workflowId|finished|status|mode
+25|So3Ktjz9tZDyhmgy|1|success|webhook
+24|SimDispatch0001|1|success|webhook
+23|CRPVVgXZ5y6xMVsP|1|success|webhook
+
+### Webhook-Registrierung (alle 3 aktiv)
+sim-dispatch-test -> 200
+u037-intent-to-proposal -> 200
+jarvis-action-dispatch -> 200
