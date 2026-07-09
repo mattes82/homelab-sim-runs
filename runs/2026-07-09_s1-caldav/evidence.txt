@@ -1,0 +1,20 @@
+## Container
+sandbox-baikal | Up 2 minutes | image=ckulka/baikal:0.10.1-nginx
+image_pin=ckulka/baikal:0.10.1-nginx@sha256:434bdd162247cc6aa6f878c9b4dce6216e39e79526b980453b13812d5f8ebf4b
+
+## Health / Auth (echter HTTP-Pfad)
+  GET /                        -> 200
+  PROPFIND dav.php (auth)      -> 207   [207 = Multi-Status, Basic-Auth ok]
+  PROPFIND dav.php (falsch)    -> 401   [401 = fail-closed]
+
+## Geseedete Kalender (CalDAV PROPFIND Depth:1)
+  - Aufgaben
+  - Dienstlich
+  - Familie
+  - HomeLab
+  - Privat
+
+## Isolations-Recheck (VM300 -> Prod MUSS Timeout sein)
+  n8n  192.168.30.43:5678 -> 000
+  host 192.168.30.21      -> 000
+  gitea 192.168.30.37:3000-> 000   [000 = unreachable/DROP]
