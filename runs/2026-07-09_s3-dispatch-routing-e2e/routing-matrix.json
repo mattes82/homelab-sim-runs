@@ -1,0 +1,115 @@
+[
+  {
+    "fixture": "lieferung",
+    "expected": "Lieferung / Versand",
+    "http": 200,
+    "exec_id": 54,
+    "exec_status": "success",
+    "routed_category": "Lieferung / Versand",
+    "route": "Lieferung / Versand",
+    "via_paperless": false,
+    "action_nodes": [],
+    "action_ok": true,
+    "PASS": true
+  },
+  {
+    "fixture": "newsletter",
+    "expected": "Newsletter / Werbung",
+    "http": 200,
+    "exec_id": 55,
+    "exec_status": "error",
+    "routed_category": "Newsletter / Werbung",
+    "route": "Newsletter / Werbung",
+    "via_paperless": false,
+    "action_nodes": [
+      "Move zu Newsletter"
+    ],
+    "action_ok": false,
+    "PASS": true
+  },
+  {
+    "fixture": "rechnung",
+    "expected": "Rechnung / Finanzen",
+    "http": 200,
+    "exec_id": 56,
+    "exec_status": "success",
+    "routed_category": "Rechnung / Finanzen",
+    "route": "Paperless-Dokumentpfad",
+    "via_paperless": true,
+    "action_nodes": [
+      "Nextcloud Task Dokument"
+    ],
+    "action_ok": true,
+    "PASS": true
+  },
+  {
+    "fixture": "account",
+    "expected": "Account / Sicherheit",
+    "http": 200,
+    "exec_id": 58,
+    "exec_status": "success",
+    "routed_category": "Account / Sicherheit",
+    "route": "Account / Sicherheit",
+    "via_paperless": false,
+    "action_nodes": [],
+    "action_ok": true,
+    "PASS": true
+  },
+  {
+    "fixture": "vertrag",
+    "expected": "Vertrag",
+    "http": 200,
+    "exec_id": 59,
+    "exec_status": "success",
+    "routed_category": "Vertrag",
+    "route": "Paperless-Dokumentpfad",
+    "via_paperless": true,
+    "action_nodes": [
+      "Nextcloud Task Dokument"
+    ],
+    "action_ok": true,
+    "PASS": true
+  },
+  {
+    "fixture": "termin",
+    "expected": "Termin / Kalender",
+    "http": 200,
+    "exec_id": 61,
+    "exec_status": "success",
+    "routed_category": "Termin / Kalender",
+    "route": "Termin / Kalender",
+    "via_paperless": false,
+    "action_nodes": [
+      "Trigger u037 Intent Extraction",
+      "Nextcloud Task Termin"
+    ],
+    "action_ok": true,
+    "PASS": true
+  },
+  {
+    "fixture": "retoure",
+    "expected": "Retoure",
+    "http": 200,
+    "exec_id": 64,
+    "exec_status": "success",
+    "routed_category": "Retoure",
+    "route": "Retoure",
+    "via_paperless": false,
+    "action_nodes": [],
+    "action_ok": true,
+    "PASS": true
+  },
+  {
+    "fixture": "sonstiges",
+    "expected": "Review / Sonstiges",
+    "http": 200,
+    "exec_id": 65,
+    "exec_status": "success",
+    "routed_category": "Review / Sonstiges",
+    "route": null,
+    "via_paperless": false,
+    "action_nodes": [],
+    "action_ok": true,
+    "PASS": true
+  }
+]

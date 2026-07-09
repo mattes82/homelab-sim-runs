@@ -1,0 +1,19 @@
+### ISOLATIONS-RECHECK (nach Routing-E2E) 2026-07-09T16:12:09Z
+192.168.30.43 5678 -> blockiert (gut)
+192.168.30.37 3000 -> blockiert (gut)
+192.168.30.21 443 -> blockiert (gut)
+
+### action-state Proposals (Executor-Aktion Zielzustand)
+ - Termin pruefen: zahnarztpraxis-xyz.de — Terminbestaetigung Zahnarzt | idem: mail-task-termin-matthias-fx-termin
+ - Dokument pruefen: fitnessstudio-xyz.de | idem: mail-task-dokument-matthias-fx-vertrag
+ - Dokument pruefen: stromanbieter.de | idem: mail-task-dokument-matthias-fx-rechnung
+
+### Health aller Services (echter HTTP-Pfad)
+  sandbox-llm-stub:4000/health -> 200
+  sandbox-action-state:8093/health -> 200
+  sandbox-jarvis-tools:8080/health -> 200
+  sandbox-task-writer:8094/health -> 200
+  sandbox-caldav-reader:8080/health -> 200
+  sandbox-caldav-writer:8080/health -> 200
+  sandbox-imap-write:8080/health -> 200
+  sandbox-imap-reader:8080/health -> 200
