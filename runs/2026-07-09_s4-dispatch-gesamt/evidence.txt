@@ -1,0 +1,6 @@
+sandbox-llm-stub 32.82MiB / 7.762GiB 0.15%
+---
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       1.6Gi       548Mi       8.5Mi       6.0Gi       6.2Gi
+container-count:
+13
