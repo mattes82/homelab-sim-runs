@@ -1,0 +1,22 @@
+## Health-Matrix (echter HTTP-Pfad, aus Quelle gebaut)
+  caldav-reader          /health -> 200
+  nextcloud-task-writer  /health -> 200
+  caldav-writer          /health -> 200
+  action-state           /health -> 200
+  jarvis-tools           /health -> 200
+
+## E2E (Referenz-Flows, frische Keys)
+  calendar.create -> caldav-writer -> ok=True cal=dienstlich
+  task.create     -> task-writer   -> ok=True status=201
+  readback caldav-reader: events=2 tasks=1
+  undo task.delete-> task-writer   -> ok=True ; tasks_after=0
+
+## Auth fail-closed Stichprobe (falscher Token -> 401/403)
+  task-writer falscher Bearer -> 403
+
+## Sim-n8n Rewire (OP-S2.3)
+  restart-policy=unless-stopped  netz=sandbox-net  healthz=200
+  n8n -> sandbox-task-writer:8094/health (by name) -> {"status":"ok"}
+
+## Isolations-Recheck (VM300 -> Prod MUSS Timeout sein)
+  n8n .30.43:5678 -> 000 | .30.21 -> 000 | gitea .37:3000 -> 000
