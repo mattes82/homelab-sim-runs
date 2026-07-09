@@ -1,0 +1,23 @@
+### ISOLATIONS-RECHECK (nach Stub-Build) 2026-07-09T15:47:22Z
+192.168.30.43 5678 -> blockiert (gut)
+192.168.30.37 3000 -> blockiert (gut)
+192.168.30.21 443 -> blockiert (gut)
+
+### STUB HEALTH (echter HTTP-Pfad)
+{"status":"ok","service":"sandbox-llm-stub","version":"1.0.0"} HTTP 200
+### STUB via n8n-Container (Namensauflösung sandbox-llm-stub)
+{"status":"ok","service":"sandbox-llm-stub","version":"1.0.0"}
+### docker ps (13 Container erwartet: 12 + llm-stub)
+jarvis-sim-n8n	Up 5 hours
+sandbox-action-state	Up 5 hours
+sandbox-baikal	Up 5 hours
+sandbox-caldav-reader	Up 5 hours
+sandbox-caldav-writer	Up 5 hours
+sandbox-dovecot	Up 5 hours
+sandbox-imap-reader	Up 5 hours
+sandbox-imap-reader-m	Up 5 hours
+sandbox-imap-write	Up 5 hours
+sandbox-jarvis-tools	Up 5 hours
+sandbox-llm-stub	Up About a minute (healthy)
+sandbox-mailpit	Up 5 hours (healthy)
+sandbox-task-writer	Up 5 hours
