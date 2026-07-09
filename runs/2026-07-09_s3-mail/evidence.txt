@@ -1,0 +1,27 @@
+## Health-Matrix (echter HTTP-Pfad)
+  imap-write-adapter       /health -> 200
+  imap-backfill-reader     /health -> 200
+  imap-backfill-reader-m   /health -> 200
+  mailpit                  SMTP-Senke API -> 200
+
+## IMAP-Read-Wiring: imap-backfill-reader /mail/mailboxes (matthias)
+  [{"mailbox": "Archiv.2025", "raw": "(\\HasNoChildren) \"/\" Archiv.2025", "flags": ["\\HasNoChildren"]}, {"mailbox": "Archiv", "raw": "(\\HasNoChildren) \"/\" Archiv", "flags": ["\\HasNoChildren"]}, {"mailbox": "INBOX.Werbung", "raw": "(\\HasNoChildren) \"/\" INBOX.Werbung", "fla
+
+## E2E mail.move (Whitelist-Ziel) matthias INBOX uid1 -> INBOX.Newsletter
+  before INBOX=messages=3 Newsletter=messages=1
+  resp {"moved":true,"uid":"1","account_id":"matthias","source":"INBOX","target":"INBOX.Newsletter"}
+  after  INBOX=messages=2 Newsletter=messages=2
+
+## E2E mail.move NICHT-Whitelist -> muss 400
+  target INBOX.Verboten -> HTTP 400
+
+## E2E mail.forward matthias INBOX uid2 -> Mailpit (gefangen, NICHT versandt)
+  resp {"forwarded":true,"uid":"2","account_id":"matthias","to":"paperless@sim.local"}
+  Mailpit total=1
+    from=forwarder@sim.local to=['paperless@sim.local'] subj=Sonderangebot Aktion
+
+## Auth fail-closed (falscher Bearer -> 401)
+  imap-write falscher Bearer -> 401
+
+## Isolations-Recheck (VM300 -> Prod MUSS Timeout)
+  n8n .30.43:5678 -> 000 | .30.21 -> 000 | gitea .37:3000 -> 000
