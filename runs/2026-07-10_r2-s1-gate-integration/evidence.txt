@@ -1,0 +1,62 @@
+### BEFORE (main 6b91fe4) — make verify-offline
+$ make verify-offline
+  OK: offline Struktur/Inventar bestanden (135 Faelle; pass=0 pending=35 skipped=80 oos=12). Verhaltensnachweis via `make replay`.
+[pflichtsuite:offline] GRUEN
+== [5/6] Summary-Skelett ==
+   ok: /home/dev/repos/homelab-jarvis-sim/results/summary.md
+== [6/6] eval-Sink Mapping-Unit ==
+   ok: 9 Mapping-Tests gruen
+
+verify-offline: STRUKTUR-GRUEN (offline; Verhaltensnachweis via `make replay`)
+EXIT=0
+
+### BEFORE — voller Unit-Discover (laeuft NICHT in verify-offline)
+$ .venv/bin/python -m unittest discover -s tests -t . 2>&1 | tail -4
+                ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/unittest/loader.py", line 308, in discover
+    raise ImportError('Start directory is not importable: %r' % start_dir)
+ImportError: Start directory is not importable: '/home/dev/repos/homelab-jarvis-sim/tests'
+EXIT=0
+
+### BEFORE — make semantic-gate (separates Target, keine verify-offline-Dependency)
+$ make semantic-gate
+[gate] uebersprungen (nicht gestaged): jarvis-action-dispatcher.json
+[gate] uebersprungen (nicht gestaged): jarvis-action-confirm-v04.json
+[gate] FAIL: keine Workflows geprueft (Quellen nicht gestaged)
+make: *** [Makefile:48: semantic-gate] Error 1
+EXIT=0
+### AFTER — make verify-offline (Standardpfad: unit-test -> semantic-gate -> verify_offline)
+$ make verify-offline
+Ran 42 tests in 0.064s
+OK
+[gate] GRUEN — 6 Workflows: nur deklarierte Injektionspunkte weichen ab
+Ran 9 tests in 0.001s
+OK
+[pflichtsuite:offline] GRUEN
+EXIT=0
+
+### GEGENPROBE 1 — absichtlich gebrochener Unit-Test -> verify-offline ROT
+$ make verify-offline  (mit tests/test_r2_probe_broken.py)
+FAIL: test_absichtlich_gebrochen (test_r2_probe_broken.TestR2Probe.test_absichtlich_gebrochen)
+  File "/home/dev/repos/homelab-jarvis-sim/tests/test_r2_probe_broken.py", line 4, in test_absichtlich_gebrochen
+FAILED (failures=1)
+make: *** [Makefile:48: unit-test] Error 1
+EXIT=2
+
+### GEGENPROBE 2 — absichtlich undeklarierte Semantik-Abweichung (onError-Mutation) -> verify-offline ROT
+$ make verify-offline  (Push: ntfy Approval onError mutiert)
+[gate] FAIL jarvis-action-dispatcher.json: Node 'Push: ntfy Approval' weicht ab in ['onError'] (undeklarierte Semantik-Aenderung)
+[gate] ROT — 1 undeklarierte Abweichung(en)
+make: *** [Makefile:63: semantic-gate] Error 1
+EXIT=2
+
+### GEGENPROBE 3 — Parity-Quellen nicht gestaged -> eindeutiges rotes parity-not-staged
+$ make verify-offline SEMGATE_SRC=
+[gate] ROT parity-not-staged — Prod-Quellen nicht gestaged (SRC='')
+make: *** [Makefile:63: semantic-gate] Error 1
+EXIT=2
+
+### ISOLATIONS-RECHECK (von VM300 aus; Erwartung: alle Timeout/blockiert)
+VM300 -> 192.168.30.43:5678 : curl rc=28 http=000 (rc=28=Timeout, rc=7=refused/unreachable)
+VM300 -> 192.168.30.21:80 : curl rc=28 http=000 (rc=28=Timeout, rc=7=refused/unreachable)
+VM300 -> 192.168.30.37:3000 : curl rc=28 http=000 (rc=28=Timeout, rc=7=refused/unreachable)
