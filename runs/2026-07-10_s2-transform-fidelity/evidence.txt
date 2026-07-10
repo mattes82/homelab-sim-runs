@@ -1,0 +1,22 @@
+### Semantik-Hash-Gate (REV-004) — GRUEN nach continueRegularOutput-Entfernung
+[gate] OK   jarvis-action-executor-v1.1.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-intent-extractor-v1.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-mail-klassifizierung-dispatch-matthias-v1.5.json — nur deklarierte Injektionspunkte
+[gate] OK   u037-intent-to-proposal-v01.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-action-dispatcher.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-action-confirm-v04.json — nur deklarierte Injektionspunkte
+
+[gate] GRUEN — 6 Workflows: nur deklarierte Injektionspunkte weichen ab
+
+### Negativ: Gate hat Zaehne (onError/typeVersion/param/added-node)
+Ran 6 tests in 0.001s
+
+OK
+
+### VM300: kein Regress #20 Routing 8/8 + #21 Effekt-Matrix + Isolation
+(aus VM300-Lauf)
+[gate] GRUEN — 6 Workflows: nur deklarierte Injektionspunkte weichen ab
+#20 Routing: 8 / 8 PASS
+#21 Effekt: [('werbung', True), ('newsletter', True), ('beleg', True)]
+ISO 192.168.30.43:5678 OK
+ISO 192.168.30.37:3000 OK
