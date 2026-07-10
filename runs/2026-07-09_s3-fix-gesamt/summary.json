@@ -1,0 +1,370 @@
+{
+  "state": {
+    "policy": [
+      {
+        "tool": "imap_write.move",
+        "source": "mail_dispatch_matthias",
+        "before": {
+          "mode": "ACTIVE",
+          "enabled": 1,
+          "max_risk_class": "QUICK_CONFIRM"
+        },
+        "reconcile_http": 200,
+        "mode_patch_http": 200,
+        "after": {
+          "mode": "ACTIVE",
+          "enabled": 1,
+          "max_risk_class": "QUICK_CONFIRM"
+        }
+      },
+      {
+        "tool": "imap_write.forward",
+        "source": "mail_dispatch_matthias",
+        "before": {
+          "mode": "ACTIVE",
+          "enabled": 1,
+          "max_risk_class": "QUICK_CONFIRM"
+        },
+        "reconcile_http": 200,
+        "mode_patch_http": 200,
+        "after": {
+          "mode": "ACTIVE",
+          "enabled": 1,
+          "max_risk_class": "QUICK_CONFIRM"
+        }
+      }
+    ],
+    "fixtures": {
+      "werbung": {
+        "uid": "22",
+        "message_id": "sim-mt-werbung-0001@sim.local",
+        "folder": "INBOX"
+      },
+      "newsletter": {
+        "uid": "23",
+        "message_id": "sim-mt-newsletter-0001@sim.local",
+        "folder": "INBOX"
+      },
+      "beleg": {
+        "uid": "24",
+        "message_id": "sim-mt-beleg-0001@sim.local",
+        "folder": "INBOX"
+      }
+    },
+    "counts_after_seed": {
+      "INBOX": 3,
+      "inbox_before": 0
+    },
+    "proposals": {
+      "werbung": {
+        "proposal_id": "prop_9545fef4aa25424d",
+        "approval_token": "<redacted>",
+        "idempotency_key": "mail-move-matthias-22",
+        "kind": "imap_write.move"
+      },
+      "newsletter": {
+        "proposal_id": "prop_f4762468c35b4b8b",
+        "approval_token": "<redacted>",
+        "idempotency_key": "mail-move-matthias-23",
+        "kind": "imap_write.move"
+      },
+      "beleg": {
+        "proposal_id": "prop_959b0631e4cc4ace",
+        "approval_token": "<redacted>",
+        "idempotency_key": "mail-forward-matthias-24",
+        "kind": "imap_write.forward"
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "issue-1",
+      "titel": "imap_write-Proposals ohne from/subject",
+      "reproduziert": true,
+      "blockiert_execution": false,
+      "detail": "Move braucht uid/folder (vorhanden) — from/subject sind Display-/Kontext-Enrichment, fehlen im Payload. Blockiert die Ausfuehrung NICHT."
+    },
+    {
+      "id": "forward-branch-dead",
+      "titel": "Forward-zu-Paperless-Zweig in v1.5 unerreichbar",
+      "blockiert_execution": true,
+      "workaround": "direct_forward_dispatch",
+      "detail": "Paperless Gate IF (paperless_candidate==true) -> Nextcloud Task Dokument; Switch-Rechnung-Zweig re-gated 'Paperless Gate' erneut auf true, das nach dem IF nur false sein kann -> Dead Branch. Terminal-Kette via exaktem Forward-Dispatch bewiesen (wie 'Forward zu Paperless' ihn absetzt)."
+    },
+    {
+      "id": "shared-adapter-bearer",
+      "titel": "Executor nutzt eine geteilte Bearer-Credential fuer alle Adapter",
+      "detail": "'Jarvis Task Writer Bearer' fuer task-writer UND imap-write. Sandbox: SIM_IMAP_WRITE_TOKEN an den Task-Writer-Bearer angeglichen. Prod-Paritaet verifizieren, sonst Executor->imap-write 401 auch in Prod."
+    },
+    {
+      "id": "executor-success-mismatch",
+      "titel": "Executor wertet imap-write-Erfolg als Fehler",
+      "blockiert_execution": false,
+      "detail": "'Adapter Success?' prueft $json.ok===true; imap-write liefert {moved:true}/{forwarded:true} (kein 'ok') -> Return: Failed TROTZ eingetretenem IMAP-Effekt. Folge: 'Record Idempotency' (Key-Verbrennung) uebersprungen -> Executor-Layer-Idempotenz greift NICHT; Doppel-Schutz nur ueber Decision-Layer (409 auf Re-Approve). from/subject-Enrichment wuerde das nicht heilen."
+    },
+    {
+      "id": "proposal-full-absent",
+      "titel": "/proposals/{id}/full im Sandbox-action-state-Build nicht vorhanden",
+      "detail": "Spaeterer Commission-Stand nicht in die Sandbox gebaut — Ausfuehrungsnachweis hier ueber Executor-Terminal-Node statt /full."
+    }
+  ],
+  "s1": {
+    "stage": "s1",
+    "rows": [
+      {
+        "fixture": "werbung",
+        "via": "classifier",
+        "category": "Newsletter / Werbung",
+        "route": "confirm",
+        "dispatch_status": "success",
+        "proposal_id": "prop_9545fef4aa25424d",
+        "proposal": {
+          "proposal_id": "prop_9545fef4aa25424d",
+          "action_type": "imap_write.move",
+          "status": "pending_approval",
+          "idempotency_key": "mail-move-matthias-22",
+          "payload": {
+            "account_id": "matthias",
+            "uid": "22",
+            "source_folder": "INBOX",
+            "target_folder": "INBOX.Newsletter",
+            "action_id": "mail-move-matthias-22"
+          },
+          "assert_type": true,
+          "assert_target": true,
+          "assert_uid": true,
+          "assert_ik": true,
+          "enrichment_from_subject": {
+            "from": false,
+            "subject": false
+          },
+          "issue1_missing_from_subject": true
+        },
+        "ok": true
+      },
+      {
+        "fixture": "newsletter",
+        "via": "classifier",
+        "category": "Newsletter / Werbung",
+        "route": "confirm",
+        "dispatch_status": "success",
+        "proposal_id": "prop_f4762468c35b4b8b",
+        "proposal": {
+          "proposal_id": "prop_f4762468c35b4b8b",
+          "action_type": "imap_write.move",
+          "status": "pending_approval",
+          "idempotency_key": "mail-move-matthias-23",
+          "payload": {
+            "account_id": "matthias",
+            "uid": "23",
+            "source_folder": "INBOX",
+            "target_folder": "INBOX.Newsletter",
+            "action_id": "mail-move-matthias-23"
+          },
+          "assert_type": true,
+          "assert_target": true,
+          "assert_uid": true,
+          "assert_ik": true,
+          "enrichment_from_subject": {
+            "from": false,
+            "subject": false
+          },
+          "issue1_missing_from_subject": true
+        },
+        "ok": true
+      },
+      {
+        "fixture": "beleg",
+        "via": "direct_forward_dispatch",
+        "classifier_probe": {
+          "category": "Rechnung / Finanzen",
+          "classifier_last_node": "Nextcloud Task Dokument",
+          "dispatcher_route": "shadow"
+        },
+        "route": "confirm",
+        "finding_forward_branch_dead": "Nextcloud Task Dokument",
+        "proposal_id": "prop_959b0631e4cc4ace",
+        "proposal": {
+          "proposal_id": "prop_959b0631e4cc4ace",
+          "action_type": "imap_write.forward",
+          "status": "pending_approval",
+          "idempotency_key": "mail-forward-matthias-24",
+          "payload": {
+            "account_id": "matthias",
+            "uid": "24",
+            "source_folder": "INBOX",
+            "action_id": "mail-forward-matthias-24"
+          },
+          "assert_type": true,
+          "assert_target": true,
+          "assert_uid": true,
+          "assert_ik": true,
+          "enrichment_from_subject": {
+            "from": false,
+            "subject": false
+          },
+          "issue1_missing_from_subject": true
+        },
+        "ok": true
+      }
+    ],
+    "issue1_reproduced_on": [
+      "werbung",
+      "newsletter",
+      "beleg"
+    ],
+    "ok": true
+  },
+  "s2": {
+    "stage": "s2",
+    "rows": [
+      {
+        "fixture": "werbung",
+        "proposal_id": "prop_9545fef4aa25424d",
+        "confirm_http": 200,
+        "confirm_exec": 226,
+        "confirm_status": "success",
+        "before": {
+          "INBOX": 3,
+          "INBOX.Newsletter": 0
+        },
+        "after": {
+          "INBOX": 2,
+          "INBOX.Newsletter": 1
+        },
+        "assert_effect": true,
+        "mail_in_target_uid": "12",
+        "proposal_status_after": "approved",
+        "executor_last_node": "Return: Failed",
+        "assert_executed": false
+      },
+      {
+        "fixture": "newsletter",
+        "proposal_id": "prop_f4762468c35b4b8b",
+        "confirm_http": 200,
+        "confirm_exec": 228,
+        "confirm_status": "success",
+        "before": {
+          "INBOX": 2,
+          "INBOX.Newsletter": 1
+        },
+        "after": {
+          "INBOX": 1,
+          "INBOX.Newsletter": 2
+        },
+        "assert_effect": true,
+        "mail_in_target_uid": "13",
+        "proposal_status_after": "approved",
+        "executor_last_node": "Return: Failed",
+        "assert_executed": false
+      },
+      {
+        "fixture": "beleg",
+        "proposal_id": "prop_959b0631e4cc4ace",
+        "confirm_http": 200,
+        "confirm_exec": 230,
+        "confirm_status": "success",
+        "before": {
+          "INBOX": 1
+        },
+        "after": {
+          "INBOX": 1
+        },
+        "mailpit_before": 0,
+        "mailpit_after": 1,
+        "assert_effect": true,
+        "mailpit_msg": {
+          "to": [
+            {
+              "Name": "",
+              "Address": "paperless@sim.local"
+            }
+          ],
+          "subject": "Ihre Rechnung Nr. 2026-4711",
+          "from": {
+            "Name": "",
+            "Address": "forwarder@sim.local"
+          }
+        },
+        "proposal_status_after": "approved",
+        "executor_last_node": "Return: Failed",
+        "assert_executed": false
+      }
+    ],
+    "ok": true
+  },
+  "idem": {
+    "stage": "idem",
+    "re_confirm": {
+      "http": 200,
+      "exec": 232,
+      "status": "success",
+      "resp": {
+        "ok": false,
+        "status": "failed",
+        "proposal_id": "prop_9545fef4aa25424d",
+        "message": {
+          "message": "409 - {\"detail\":\"proposal is not pending: current status is approved\"}",
+          "name": "AxiosError",
+          "stack": "AxiosError: Request failed with status code 409\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/core/settle.js:19:12)\n    at IncomingMessage.handleStreamEnd (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/adapters/http.js:1139:13)\n    at IncomingMessage.emit (node:events:521:24)\n    at endReadableNT (node:internal/streams/readable:1729:12)\n    at processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/core/Axios.js:46:41)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at invokeAxios (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_09b6de71aa48ba17834bf7615757388b/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:98:10)\n    at proxyRequestToAxios (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_09b6de71aa48ba17834bf7615757388b/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:448:20)\n    at Object.request (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_09b6de71aa48ba17834bf7615757388b/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:1701:11)",
+          "code": "ERR_BAD_REQUEST",
+          "status": 409
+        }
+      }
+    },
+    "duplicate_dispatch": {
+      "route": {
+        "route": null,
+        "mode": null,
+        "risk_class": null,
+        "proposal_id": null,
+        "approval_token": null,
+        "tool_name": null,
+        "action_type": null
+      },
+      "dispatcher_status": "success"
+    },
+    "idempotency_check": {
+      "exists": false
+    },
+    "counts_before": {
+      "INBOX": 1,
+      "INBOX.Newsletter": 2
+    },
+    "counts_after": {
+      "INBOX": 1,
+      "INBOX.Newsletter": 2
+    },
+    "assert_no_double_move": true
+  },
+  "whitelist": {
+    "stage": "whitelist",
+    "proposal_id": "prop_bd93d9c1368f4063",
+    "confirm_http": 200,
+    "confirm_status": "success",
+    "proposal_status_after": "approved",
+    "result_ref": null,
+    "boese_folder_count": -1,
+    "assert_rejected": true
+  },
+  "effekt_matrix": [
+    {
+      "zweig": "werbung",
+      "aktion": "move",
+      "effekt": true,
+      "executor_last_node": "Return: Failed"
+    },
+    {
+      "zweig": "newsletter",
+      "aktion": "move",
+      "effekt": true,
+      "executor_last_node": "Return: Failed"
+    },
+    {
+      "zweig": "beleg",
+      "aktion": "forward",
+      "effekt": true,
+      "executor_last_node": "Return: Failed"
+    }
+  ]
+}

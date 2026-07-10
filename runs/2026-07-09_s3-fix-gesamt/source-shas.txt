@@ -1,0 +1,6 @@
+Fix-Verify-Promote P1+P4 — getestete Basis + Fix-Branch-Tips:
+tested-base:   homelab-docker@7853fbe, homelab-jarvis-workflows@e9470b4, homelab-jarvis-sim@c7ee804
+fix-P1:        homelab-docker fix/imap-write-ok-contract @241a47f (PR #55)
+fix-P4:        homelab-jarvis-workflows fix/imapwrite-proposal-enrichment @3134fcd (PR #40)
+sim-verify:    homelab-jarvis-sim fix/mail-terminal-p4-forward-enrichment @b2cb317 (PR #22)
+VM300-Staging traegt kein .git (Freshness-Gap, wie #21).
