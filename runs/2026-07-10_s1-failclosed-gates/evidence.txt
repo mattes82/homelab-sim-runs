@@ -1,0 +1,26 @@
+### BEFORE (current-main) — verify-offline: GRUEN trotz 0 Pass (REV-002)
+$ grep pass results/summary.md  (main-Stand)
+**pass:** 0 · fail: 0 · pending: 35 · skipped: 80 · out_of_scope: 20 · total: 135 -> verify-offline EXIT=0 GRUEN
+
+### AFTER — verify-offline fail-closed + ehrlich
+   ok: 9 Mapping-Tests gruen
+
+verify-offline: STRUKTUR-GRUEN (offline; Verhaltensnachweis via `make replay`)
+
+### AFTER — leere Pflicht-Suite -> ROT (REV-002)
+[replay] 0 Faelle · run_id=2026-07-10T11:56:35Z-ed55f28b · summary -> /tmp/ev-empty · eval-Senke: skipped (action-state nicht erreichbar)
+[pflichtsuite:offline]
+  FAIL: 0 Faelle verarbeitet — leere Suite ist kein Gruen
+[pflichtsuite:offline] ROT — Pflichtsuite nicht bestanden
+
+### AFTER — make replay reicht Fehler durch (REV-001): run_replay.sh Exit + trap-Teardown
+run_replay.sh EXIT=1
+[SKIP ] rel-protected (relevance) — lifeops (http://127.0.0.1:8196) not reachable
+[pflichtsuite:runtime]
+  FAIL: quick_confirm: pass=0 < 1 (Verhaltens-Pflicht nicht erfuellt)
+  FAIL: undo: pass=0 < 1 (Verhaltens-Pflicht nicht erfuellt)
+
+### Unit-Tests Pflichtsuite
+Ran 8 tests in 0.000s
+
+OK
