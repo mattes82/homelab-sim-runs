@@ -1,0 +1,109 @@
+{
+  "stage": "s1",
+  "rows": [
+    {
+      "fixture": "werbung",
+      "via": "classifier",
+      "category": "Newsletter / Werbung",
+      "route": "confirm",
+      "dispatch_status": "success",
+      "proposal_id": "prop_424ecce4bc964e6b",
+      "proposal": {
+        "proposal_id": "prop_424ecce4bc964e6b",
+        "action_type": "imap_write.move",
+        "status": "pending_approval",
+        "idempotency_key": "mail-move-matthias-31",
+        "payload": {
+          "account_id": "matthias",
+          "uid": "31",
+          "source_folder": "INBOX",
+          "target_folder": "INBOX.Newsletter",
+          "from": "onlineshop-xyz.de",
+          "subject": "Sonderangebot Aktion: 30% Rabatt nur heute im Sale",
+          "action_id": "mail-move-matthias-31"
+        },
+        "assert_type": true,
+        "assert_target": true,
+        "assert_uid": true,
+        "assert_ik": true,
+        "enrichment_from_subject": {
+          "from": true,
+          "subject": true
+        },
+        "issue1_missing_from_subject": false
+      },
+      "ok": true
+    },
+    {
+      "fixture": "newsletter",
+      "via": "classifier",
+      "category": "Newsletter / Werbung",
+      "route": "confirm",
+      "dispatch_status": "success",
+      "proposal_id": "prop_3f1d4ab106954446",
+      "proposal": {
+        "proposal_id": "prop_3f1d4ab106954446",
+        "action_type": "imap_write.move",
+        "status": "pending_approval",
+        "idempotency_key": "mail-move-matthias-32",
+        "payload": {
+          "account_id": "matthias",
+          "uid": "32",
+          "source_folder": "INBOX",
+          "target_folder": "INBOX.Newsletter",
+          "from": "heise-medien-xyz.de",
+          "subject": "Newsletter: Die Themen der Woche im Ueberblick",
+          "action_id": "mail-move-matthias-32"
+        },
+        "assert_type": true,
+        "assert_target": true,
+        "assert_uid": true,
+        "assert_ik": true,
+        "enrichment_from_subject": {
+          "from": true,
+          "subject": true
+        },
+        "issue1_missing_from_subject": false
+      },
+      "ok": true
+    },
+    {
+      "fixture": "beleg",
+      "via": "direct_forward_dispatch",
+      "classifier_probe": {
+        "category": "Rechnung / Finanzen",
+        "classifier_last_node": "Nextcloud Task Dokument",
+        "dispatcher_route": "shadow"
+      },
+      "route": "confirm",
+      "finding_forward_branch_dead": "Nextcloud Task Dokument",
+      "proposal_id": "prop_7492ba66230240bb",
+      "proposal": {
+        "proposal_id": "prop_7492ba66230240bb",
+        "action_type": "imap_write.forward",
+        "status": "pending_approval",
+        "idempotency_key": "mail-forward-matthias-33",
+        "payload": {
+          "account_id": "matthias",
+          "uid": "33",
+          "source_folder": "INBOX",
+          "from": "stromanbieter.de",
+          "subject": "Ihre Rechnung Nr. 2026-4711",
+          "action_id": "mail-forward-matthias-33"
+        },
+        "assert_type": true,
+        "assert_target": true,
+        "assert_uid": true,
+        "assert_ik": true,
+        "enrichment_from_subject": {
+          "from": true,
+          "subject": true
+        },
+        "issue1_missing_from_subject": false
+      },
+      "ok": true
+    }
+  ],
+  "issue1_reproduced_on": [],
+  "ok": true
+}
