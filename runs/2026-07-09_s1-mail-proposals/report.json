@@ -1,0 +1,107 @@
+{
+  "stage": "s1",
+  "rows": [
+    {
+      "fixture": "werbung",
+      "via": "classifier",
+      "category": "Newsletter / Werbung",
+      "route": "confirm",
+      "dispatch_status": "success",
+      "proposal_id": "prop_9545fef4aa25424d",
+      "proposal": {
+        "proposal_id": "prop_9545fef4aa25424d",
+        "action_type": "imap_write.move",
+        "status": "pending_approval",
+        "idempotency_key": "mail-move-matthias-22",
+        "payload": {
+          "account_id": "matthias",
+          "uid": "22",
+          "source_folder": "INBOX",
+          "target_folder": "INBOX.Newsletter",
+          "action_id": "mail-move-matthias-22"
+        },
+        "assert_type": true,
+        "assert_target": true,
+        "assert_uid": true,
+        "assert_ik": true,
+        "enrichment_from_subject": {
+          "from": false,
+          "subject": false
+        },
+        "issue1_missing_from_subject": true
+      },
+      "ok": true
+    },
+    {
+      "fixture": "newsletter",
+      "via": "classifier",
+      "category": "Newsletter / Werbung",
+      "route": "confirm",
+      "dispatch_status": "success",
+      "proposal_id": "prop_f4762468c35b4b8b",
+      "proposal": {
+        "proposal_id": "prop_f4762468c35b4b8b",
+        "action_type": "imap_write.move",
+        "status": "pending_approval",
+        "idempotency_key": "mail-move-matthias-23",
+        "payload": {
+          "account_id": "matthias",
+          "uid": "23",
+          "source_folder": "INBOX",
+          "target_folder": "INBOX.Newsletter",
+          "action_id": "mail-move-matthias-23"
+        },
+        "assert_type": true,
+        "assert_target": true,
+        "assert_uid": true,
+        "assert_ik": true,
+        "enrichment_from_subject": {
+          "from": false,
+          "subject": false
+        },
+        "issue1_missing_from_subject": true
+      },
+      "ok": true
+    },
+    {
+      "fixture": "beleg",
+      "via": "direct_forward_dispatch",
+      "classifier_probe": {
+        "category": "Rechnung / Finanzen",
+        "classifier_last_node": "Nextcloud Task Dokument",
+        "dispatcher_route": "shadow"
+      },
+      "route": "confirm",
+      "finding_forward_branch_dead": "Nextcloud Task Dokument",
+      "proposal_id": "prop_959b0631e4cc4ace",
+      "proposal": {
+        "proposal_id": "prop_959b0631e4cc4ace",
+        "action_type": "imap_write.forward",
+        "status": "pending_approval",
+        "idempotency_key": "mail-forward-matthias-24",
+        "payload": {
+          "account_id": "matthias",
+          "uid": "24",
+          "source_folder": "INBOX",
+          "action_id": "mail-forward-matthias-24"
+        },
+        "assert_type": true,
+        "assert_target": true,
+        "assert_uid": true,
+        "assert_ik": true,
+        "enrichment_from_subject": {
+          "from": false,
+          "subject": false
+        },
+        "issue1_missing_from_subject": true
+      },
+      "ok": true
+    }
+  ],
+  "issue1_reproduced_on": [
+    "werbung",
+    "newsletter",
+    "beleg"
+  ],
+  "ok": true
+}
