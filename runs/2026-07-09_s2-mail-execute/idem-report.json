@@ -1,0 +1,44 @@
+{
+  "stage": "idem",
+  "re_confirm": {
+    "http": 200,
+    "exec": 232,
+    "status": "success",
+    "resp": {
+      "ok": false,
+      "status": "failed",
+      "proposal_id": "prop_9545fef4aa25424d",
+      "message": {
+        "message": "409 - {\"detail\":\"proposal is not pending: current status is approved\"}",
+        "name": "AxiosError",
+        "stack": "AxiosError: Request failed with status code 409\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/core/settle.js:19:12)\n    at IncomingMessage.handleStreamEnd (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/adapters/http.js:1139:13)\n    at IncomingMessage.emit (node:events:521:24)\n    at endReadableNT (node:internal/streams/readable:1729:12)\n    at processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.16.1/node_modules/axios/lib/core/Axios.js:46:41)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at invokeAxios (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_09b6de71aa48ba17834bf7615757388b/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:98:10)\n    at proxyRequestToAxios (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_09b6de71aa48ba17834bf7615757388b/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:448:20)\n    at Object.request (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_09b6de71aa48ba17834bf7615757388b/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:1701:11)",
+        "code": "ERR_BAD_REQUEST",
+        "status": 409
+      }
+    }
+  },
+  "duplicate_dispatch": {
+    "route": {
+      "route": null,
+      "mode": null,
+      "risk_class": null,
+      "proposal_id": null,
+      "approval_token": null,
+      "tool_name": null,
+      "action_type": null
+    },
+    "dispatcher_status": "success"
+  },
+  "idempotency_check": {
+    "exists": false
+  },
+  "counts_before": {
+    "INBOX": 1,
+    "INBOX.Newsletter": 2
+  },
+  "counts_after": {
+    "INBOX": 1,
+    "INBOX.Newsletter": 2
+  },
+  "assert_no_double_move": true
+}

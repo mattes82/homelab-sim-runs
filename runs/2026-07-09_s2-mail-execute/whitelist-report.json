@@ -1,0 +1,10 @@
+{
+  "stage": "whitelist",
+  "proposal_id": "prop_bd93d9c1368f4063",
+  "confirm_http": 200,
+  "confirm_status": "success",
+  "proposal_status_after": "approved",
+  "result_ref": null,
+  "boese_folder_count": -1,
+  "assert_rejected": true
+}
