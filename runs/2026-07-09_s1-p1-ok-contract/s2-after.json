@@ -1,0 +1,78 @@
+{
+  "stage": "s2",
+  "rows": [
+    {
+      "fixture": "werbung",
+      "proposal_id": "prop_424ecce4bc964e6b",
+      "confirm_http": 200,
+      "confirm_exec": 277,
+      "confirm_status": "success",
+      "before": {
+        "INBOX": 3,
+        "INBOX.Newsletter": 0
+      },
+      "after": {
+        "INBOX": 2,
+        "INBOX.Newsletter": 1
+      },
+      "assert_effect": true,
+      "mail_in_target_uid": "18",
+      "proposal_status_after": "approved",
+      "executor_last_node": "Return: Executed",
+      "assert_executed": true
+    },
+    {
+      "fixture": "newsletter",
+      "proposal_id": "prop_3f1d4ab106954446",
+      "confirm_http": 200,
+      "confirm_exec": 279,
+      "confirm_status": "success",
+      "before": {
+        "INBOX": 2,
+        "INBOX.Newsletter": 1
+      },
+      "after": {
+        "INBOX": 1,
+        "INBOX.Newsletter": 2
+      },
+      "assert_effect": true,
+      "mail_in_target_uid": "19",
+      "proposal_status_after": "approved",
+      "executor_last_node": "Return: Executed",
+      "assert_executed": true
+    },
+    {
+      "fixture": "beleg",
+      "proposal_id": "prop_7492ba66230240bb",
+      "confirm_http": 200,
+      "confirm_exec": 281,
+      "confirm_status": "success",
+      "before": {
+        "INBOX": 1
+      },
+      "after": {
+        "INBOX": 1
+      },
+      "mailpit_before": 0,
+      "mailpit_after": 1,
+      "assert_effect": true,
+      "mailpit_msg": {
+        "to": [
+          {
+            "Name": "",
+            "Address": "paperless@sim.local"
+          }
+        ],
+        "subject": "Ihre Rechnung Nr. 2026-4711",
+        "from": {
+          "Name": "",
+          "Address": "forwarder@sim.local"
+        }
+      },
+      "proposal_status_after": "approved",
+      "executor_last_node": "Return: Executed",
+      "assert_executed": true
+    }
+  ],
+  "ok": true
+}
