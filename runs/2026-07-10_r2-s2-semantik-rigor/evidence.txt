@@ -1,0 +1,145 @@
+### AFTER S2 — GATE_MODE=harness (real staged)
+[gate] OK   jarvis-action-executor-v1.1.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-intent-extractor-v1.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-mail-klassifizierung-dispatch-matthias-v1.5.json — nur deklarierte Injektionspunkte
+[gate] OK   u037-intent-to-proposal-v01.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-action-dispatcher.json — nur deklarierte Injektionspunkte
+[gate] INJ  jarvis-action-confirm-v04.json: Node 'Build M5 Input' — Sim-only confirm-adapterMap (deklarierte Prod-Luecke DR-02; Prod-v04 ohne imap_write-Mapping)
+
+[gate] GRUEN (harness) — deklarierte Sim-Adapter-Injektion akzeptiert; Ergebnis NICHT promotion-faehig
+EXIT=0
+
+### AFTER S2 — GATE_MODE=parity (real staged)
+[gate] OK   jarvis-action-executor-v1.1.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-intent-extractor-v1.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-mail-klassifizierung-dispatch-matthias-v1.5.json — nur deklarierte Injektionspunkte
+[gate] OK   u037-intent-to-proposal-v01.json — nur deklarierte Injektionspunkte
+[gate] OK   jarvis-action-dispatcher.json — nur deklarierte Injektionspunkte
+[gate] GAP  jarvis-action-confirm-v04.json: Node 'Build M5 Input' — Sim-only confirm-adapterMap (deklarierte Prod-Luecke DR-02; Prod-v04 ohne imap_write-Mapping)
+
+[gate] EHRLICH ROT (parity) — 1 deklarierte Prod-Luecke(n) (DR-02 confirm-adapterMap); undeklarierte Abweichungen: 0. NICHT promotion-faehig, bis der Prod-Fix die Map ergaenzt.
+EXIT=3
+[mutation] credentials auf Node 'Return: Error'
+$ make semantic-gate  (nach credentials-Mutation)
+[gate] FAIL jarvis-action-dispatcher.json: Node 'Return: Error' weicht ab in ['credentials'] (undeklarierte Semantik-Aenderung)
+[gate] ROT (harness) — 1 undeklarierte Abweichung(en)
+make: *** [Makefile:68: semantic-gate] Error 1
+EXIT=0
+[mutation] retryOnFail auf Node 'Return: Error'
+$ make semantic-gate  (nach retryOnFail-Mutation)
+[gate] FAIL jarvis-action-dispatcher.json: Node 'Return: Error' weicht ab in ['retryOnFail'] (undeklarierte Semantik-Aenderung)
+[gate] ROT (harness) — 1 undeklarierte Abweichung(en)
+make: *** [Makefile:68: semantic-gate] Error 1
+EXIT=0
+[mutation] disabled auf Node 'Return: Error'
+$ make semantic-gate  (nach disabled-Mutation)
+[gate] FAIL jarvis-action-dispatcher.json: Node 'Return: Error' weicht ab in ['disabled'] (undeklarierte Semantik-Aenderung)
+[gate] ROT (harness) — 1 undeklarierte Abweichung(en)
+make: *** [Makefile:68: semantic-gate] Error 1
+EXIT=0
+### GEGENPROBE — fehlender Required-Workflow (confirm-v04-Transformat entfernt)
+[gate] FAIL jarvis-action-confirm-v04.json: required-Workflow fehlt: Transformat (DR-05)
+[gate] ROT (harness) — 1 undeklarierte Abweichung(en)
+EXIT=2
+
+### Kombiniertes Standard-Target: make semantic-gate (gesunder Baum)
+[gate] GRUEN (harness) — deklarierte Sim-Adapter-Injektion akzeptiert; Ergebnis NICHT promotion-faehig
+if [ $rc -eq 3 ]; then echo "[semantic-gate] Parity EHRLICH ROT — bekannte deklarierte Prod-Luecke (DR-02); Ergebnis NICHT promotion-faehig"; fi
+[gate] EHRLICH ROT (parity) — 1 deklarierte Prod-Luecke(n) (DR-02 confirm-adapterMap); undeklarierte Abweichungen: 0. NICHT promotion-faehig, bis der Prod-Fix die Map ergaenzt.
+[semantic-gate] Parity EHRLICH ROT — bekannte deklarierte Prod-Luecke (DR-02); Ergebnis NICHT promotion-faehig
+EXIT=0
+
+### make verify-offline (voller Standardlauf nach S2)
+Ran 56 tests in 0.087s
+OK
+[gate] GRUEN (harness) — deklarierte Sim-Adapter-Injektion akzeptiert; Ergebnis NICHT promotion-faehig
+if [ $rc -eq 3 ]; then echo "[semantic-gate] Parity EHRLICH ROT — bekannte deklarierte Prod-Luecke (DR-02); Ergebnis NICHT promotion-faehig"; fi
+[gate] EHRLICH ROT (parity) — 1 deklarierte Prod-Luecke(n) (DR-02 confirm-adapterMap); undeklarierte Abweichungen: 0. NICHT promotion-faehig, bis der Prod-Fix die Map ergaenzt.
+[semantic-gate] Parity EHRLICH ROT — bekannte deklarierte Prod-Luecke (DR-02); Ergebnis NICHT promotion-faehig
+Ran 9 tests in 0.001s
+OK
+[pflichtsuite:offline] GRUEN
+verify-offline: STRUKTUR-GRUEN (offline; Verhaltensnachweis via `make replay`)
+EXIT=0
+### make semantic-gate-parity (promotion-relevante Aussage)
+[gate] EHRLICH ROT (parity) — 1 deklarierte Prod-Luecke(n) (DR-02 confirm-adapterMap); undeklarierte Abweichungen: 0. NICHT promotion-faehig, bis der Prod-Fix die Map ergaenzt.
+make: *** [Makefile:76: semantic-gate-parity] Error 3
+EXIT=2 (erwartet: != 0 solange Prod-Luecke offen)
+transform EXIT=0
+--- semantic-gate harness (VM300) ---
+
+[gate] GRUEN (harness) — deklarierte Sim-Adapter-Injektion akzeptiert; Ergebnis NICHT promotion-faehig
+EXIT=0
+--- semantic-gate parity (VM300) ---
+
+[gate] EHRLICH ROT (parity) — 1 deklarierte Prod-Luecke(n) (DR-02 confirm-adapterMap); undeklarierte Abweichungen: 0. NICHT promotion-faehig, bis der Prod-Fix die Map ergaenzt.
+EXIT=3
+Successfully imported 1 workflow.
+Successfully imported 1 workflow.
+Successfully imported 1 workflow.
+Successfully imported 1 workflow.
+[import-mt] transform
+[import-mt] import dispatch v1.5 + confirm v04
+Importing 1 workflows...
+Importing 1 workflows...
+[import-mt] aktivieren (Webhook-Workflows + Executor-Sub-WF)
+[import-mt] n8n restart (Webhook-Registrierung)
+[import-mt] fertig
+Please restart n8n for changes to take effect if n8n is currently running.
+READY
+  {
+    "fixture": "sonstiges",
+    "expected": "Review / Sonstiges",
+    "http": 200,
+    "exec_id": 343,
+    "exec_status": "success",
+    "routed_category": "Review / Sonstiges",
+    "route": null,
+    "via_paperless": false,
+    "action_nodes": [],
+    "action_ok": true,
+    "PASS": true
+  }
+]
+#20 Routing: 8 / 8 PASS
+== mtrun reset
+[mt] reset action-state: cleared
+[mt] reset: fertig (Dovecot expunged, Mailpit geleert, state.json entfernt)
+   rc=0
+== mtrun policy
+[mt] policy imap_write.move/mail_dispatch_matthias: {'mode': 'ACTIVE', 'enabled': 1, 'max_risk_class': 'QUICK_CONFIRM'} -> {'mode': 'ACTIVE', 'enabled': 1, 'max_risk_class': 'QUICK_CONFIRM'}
+[mt] policy imap_write.forward/mail_dispatch_matthias: {'mode': 'ACTIVE', 'enabled': 1, 'max_risk_class': 'QUICK_CONFIRM'} -> {'mode': 'ACTIVE', 'enabled': 1, 'max_risk_class': 'QUICK_CONFIRM'}
+[mt] policy: OK
+   rc=0
+== mtrun seed
+[mt] seed werbung: INBOX uid=37
+[mt] seed newsletter: INBOX uid=38
+[mt] seed beleg: INBOX uid=39
+   rc=0
+== mtrun s1
+[mt] s1 beleg: via=direct_forward_dispatch route=confirm pid=prop_a4cb52d5eef9408f ok=True
+[mt] report: /opt/homelab-jarvis-sim/results/mail-terminal/s1/report.json
+[mt] s1: OK; Issue#1 (fehlt from/subject) auf: []
+   rc=0
+== mtrun s2
+[mt] s2 beleg: effect=True status=approved
+[mt] report: /opt/homelab-jarvis-sim/results/mail-terminal/s2/report.json
+[mt] s2: OK
+   rc=0
+== mtrun idem
+[mt] report: /opt/homelab-jarvis-sim/results/mail-terminal/idem/report.json
+[mt] idem: kein Doppel-Move=True; re-confirm-status=success; idem-check={'exists': True, 'idempotency_key': 'mail-move-matthias-37', 'action_type': 'imap_write.move', 'action_id': 'prop_fe4b981d86f8462a', 'execution_id': 'exec_1783716994039', 'status': 'executed', 'result_ref': '37', 'metadata': {}, 'created_at': '2026-07-10T20:56:34.144792+00:00', 'updated_at': '2026-07-10T20:56:34.144792+00:00'}
+   rc=0
+== mtrun whitelist
+[mt] report: /opt/homelab-jarvis-sim/results/mail-terminal/whitelist/report.json
+[mt] whitelist: rejected=True status=approved boese=-1
+   rc=0
+== mtrun summary
+[mt] report: /opt/homelab-jarvis-sim/results/mail-terminal/summary/report.json
+[mt] summary geschrieben (inkl. findings + effekt_matrix)
+   rc=0
+#21 Effekt-Matrix: [('werbung', True), ('newsletter', True), ('beleg', True)]
+--- ISOLATIONS-RECHECK ---
+VM300 -> 192.168.30.43:5678 : rc=28 (28=Timeout)
+VM300 -> 192.168.30.21:80 : rc=28 (28=Timeout)
+VM300 -> 192.168.30.37:3000 : rc=28 (28=Timeout)
