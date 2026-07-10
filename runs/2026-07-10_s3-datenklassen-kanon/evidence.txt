@@ -1,0 +1,10 @@
+### Datenklassen-Kanon (REV-003) — 9 Negativtests
+Ran 9 tests in 0.058s
+
+OK
+
+### verify-offline: Klasse C jetzt 'blocked | intake-hard-block'
+**pass:** 0 · **fail:** 0 · **pending:** 35 · **skipped:** 80 · **out_of_scope:** 12 · **total:** 135
+| fail-class_c_pattern-01 | failure | blocked | intake-hard-block | privacy_class=C (class_c_pattern) — nie Modellinput/Cloud/Persistenz |
+
+### Kanon (verifiziert): C=blocked(Hard-Block Intake), A=local_only(nicht geblockt), B=cloud_allowed — homelab_jarvis.md §2.5/§6.7
