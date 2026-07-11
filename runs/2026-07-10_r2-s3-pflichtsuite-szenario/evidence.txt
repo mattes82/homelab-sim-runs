@@ -1,0 +1,71 @@
+### AFTER S3 — make verify-offline (offline: Szenario-Inventar + Intake-Block=pass)
+Ran 62 tests in 0.083s
+[gate] GRUEN (harness) — deklarierte Sim-Adapter-Injektion akzeptiert; Ergebnis NICHT promotion-faehig
+if [ $rc -eq 3 ]; then echo "[semantic-gate] Parity EHRLICH ROT — bekannte deklarierte Prod-Luecke (DR-02); Ergebnis NICHT promotion-faehig"; fi
+[gate] EHRLICH ROT (parity) — 1 deklarierte Prod-Luecke(n) (DR-02 confirm-adapterMap); undeklarierte Abweichungen: 0. NICHT promotion-faehig, bis der Prod-Fix die Map ergaenzt.
+[semantic-gate] Parity EHRLICH ROT — bekannte deklarierte Prod-Luecke (DR-02); Ergebnis NICHT promotion-faehig
+[PASS ] fail-class_c_pattern-01 (failure) — intake-hard-block (Klasse C)
+[PASS ] fail-class_c_pattern-02 (failure) — intake-hard-block (Klasse C)
+[PASS ] fail-class_c_pattern-03 (failure) — intake-hard-block (Klasse C)
+[PASS ] fail-class_c_pattern-04 (failure) — intake-hard-block (Klasse C)
+[PASS ] fail-dienstlich-01 (failure) — intake-hard-block (Klasse C)
+EXIT=0
+[pflichtsuite:offline]
+  OK: offline Struktur/Inventar bestanden (140 Faelle; pass=8 pending=35 skipped=85 oos=12). Verhaltensnachweis via `make replay`.
+[pflichtsuite:offline] GRUEN
+verify-offline: STRUKTUR-GRUEN (offline; Verhaltensnachweis via `make replay`)
+qc-double-01             pass ok
+qc-double-02             pass ok
+qc-double-03             pass ok
+qc-lost-response-01      pass ok
+undo-invalid-token-01    pass ok
+undo-empty-token-01      pass ok
+undo-lifecycle-01        pass ok
+undo-lifecycle-02        pass ok
+undo-lifecycle-03        pass ok
+prom-apply-no-token      fail apply_http: exp=403 got=503
+prom-degrade-policy      skipped runtime error: HTTP Error 503: Service Unavailable
+prom-degrade-undos       skipped runtime error: HTTP Error 503: Service Unavailable
+[PASS ] prom-apply-no-token (promotion)
+[PASS ] prom-apply-valid (promotion)
+[PASS ] prom-degrade-policy (promotion)
+[PASS ] prom-degrade-undos (promotion)
+[PASS ] prom-eligibility-hard (promotion)
+[PASS ] prom-gate-19-cases (promotion)
+[PASS ] prom-gate-20-cases (promotion)
+[PASS ] prom-gate-no-data (promotion)
+[PASS ] prom-gate-undo-6pct (promotion)
+[PASS ] prom-reversibility (promotion)
+
+[replay] 10 Faelle · run_id=2026-07-11T03:09:41Z-d7f8b8db · summary -> /opt/homelab-jarvis-sim/results · eval-Senke: active · posted=10 · results -> /opt/homelab-jarvis-sim/results/eval_2026-07-11T03:09:41Z-d7f8b8db.md
+[PASS ] ma-quarantine-high (mail_action)
+[PASS ] ma-quarantine-uncertain (mail_action)
+
+[replay] 91 Faelle · run_id=2026-07-11T03:10:14Z-acb056a9 · summary -> /opt/homelab-jarvis-sim/results · eval-Senke: active · posted=91 · results -> /opt/homelab-jarvis-sim/results/eval_2026-07-11T03:10:14Z-acb056a9.md
+Pflichtfaelle: 27 — pass: 27 — nicht-pass: KEINE
+Lauf gesamt: Counter({'pass': 75, 'out_of_scope': 12, 'skipped': 4})
+pre-check: 8193 OK
+REPLAY-EXIT=1
+  FAIL: Inventar aging: 0 < 1 (Pflichtkategorie leer/zu klein)
+  FAIL: quick_confirm: pass=0 < 1 (Verhaltens-Pflicht nicht erfuellt)
+  FAIL: quick_confirm: pending=0/skipped=21 in Pflichtkategorie (haette laufen muessen)
+  FAIL: failure: pending=0/skipped=4 in Pflichtkategorie (haette laufen muessen)
+  FAIL: relevance: pass=0 < 1 (Verhaltens-Pflicht nicht erfuellt)
+  FAIL: Pflicht-Szenario doppel_confirm: qc-double-01 status=skipped (nur 'pass' zulaessig; unknown/oos/skipped/pending/blocked/fail = rot)
+  FAIL: Pflicht-Szenario doppel_confirm: qc-double-02 status=skipped (nur 'pass' zulaessig; unknown/oos/skipped/pending/blocked/fail = rot)
+  FAIL: Pflicht-Szenario doppel_confirm: qc-double-03 status=skipped (nur 'pass' zulaessig; unknown/oos/skipped/pending/blocked/fail = rot)
+  FAIL: Pflicht-Szenario verlorene_antwort_nach_write: qc-lost-response-01 status=skipped (nur 'pass' zulaessig; unknown/oos/skipped/pending/blocked/fail = rot)
+[pflichtsuite:runtime] ROT — Pflichtsuite nicht bestanden
+REPLAY-EXIT=1
+  FAIL: Inventar relevance: 0 < 1 (Pflichtkategorie leer/zu klein)
+  FAIL: Inventar tageslage: 0 < 1 (Pflichtkategorie leer/zu klein)
+  FAIL: Inventar open_loops: 0 < 1 (Pflichtkategorie leer/zu klein)
+  FAIL: Inventar aging: 0 < 1 (Pflichtkategorie leer/zu klein)
+  FAIL: failure: pending=0/skipped=4 in Pflichtkategorie (haette laufen muessen)
+  FAIL: relevance: pass=0 < 1 (Verhaltens-Pflicht nicht erfuellt)
+[pflichtsuite:runtime] ROT — Pflichtsuite nicht bestanden
+75
+### ISOLATIONS-RECHECK
+VM300 -> 192.168.30.43:5678 : rc=28 (28=Timeout)
+VM300 -> 192.168.30.21:80 : rc=28 (28=Timeout)
+VM300 -> 192.168.30.37:3000 : rc=28 (28=Timeout)
