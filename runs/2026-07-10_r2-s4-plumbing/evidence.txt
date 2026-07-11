@@ -1,0 +1,34 @@
+### GEGENPROBE DR-10 — REPLAY_UP_CMD=false -> Exit != 0, trap-teardown laeuft
+[run_replay] FEHLER: REPLAY_UP_CMD fehlgeschlagen — Abbruch (Exit 2)
+[teardown] lief (via trap)
+EXIT=2
+MAKE-REPLAY-EXIT=0
+[PASS ] rel-dienstlich-marker (relevance)
+[PASS ] rel-dienstlich-work (relevance)
+[PASS ] rel-do-not-taskify (relevance)
+[PASS ] rel-persona-down (relevance)
+[PASS ] rel-persona-local-only (relevance)
+[PASS ] rel-protected (relevance)
+[PASS ] rel-restfehler-frist (relevance)
+[PASS ] rel-temporal-down (relevance)
+[PASS ] rel-temporal-malformed (relevance)
+[PASS ] rel-termin (relevance)
+[PASS ] rel-unklar (relevance)
+
+[replay] 140 Faelle · run_id=2026-07-11T03:21:26Z-d6aa575f · summary -> /opt/homelab-jarvis-sim/results · eval-Senke: active · posted=140 · results -> /opt/homelab-jarvis-sim/results/eval_2026-07-11T03:21:26Z-d6aa575f.md
+
+[pflichtsuite:runtime]
+  OK: runtime-Pflichtsuite bestanden (89 pass; 6 Pflichtkategorien, 12 Pflicht-Szenarien/27 Pflichtfaelle)
+[pflichtsuite:runtime] GRUEN
+[sandbox_down] Entferne Container jas-sandbox ...
+[sandbox_down] Loesche ephemere Sandbox /opt/homelab-jarvis-sim/.sandbox ...
+[sandbox_down] Fertig.
+### DR-11 — Statussummen-Kopfzeile (dynamisch) == total
+**pass:** 89 · **fail:** 0 · **pending:** 35 · **skipped:** 0 · **out_of_scope:** 16 · **total:** 140
+sandbox-lifeops Up 29 seconds
+{"status":"ok","database":"ok","version":"0.1.0"}
+
+### ISOLATIONS-RECHECK
+VM300 -> 192.168.30.43:5678 : rc=28 (28=Timeout)
+VM300 -> 192.168.30.21:80 : rc=28 (28=Timeout)
+VM300 -> 192.168.30.37:3000 : rc=28 (28=Timeout)
