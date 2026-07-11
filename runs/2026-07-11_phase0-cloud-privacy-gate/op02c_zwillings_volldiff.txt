@@ -1,0 +1,255 @@
+# Zwillings-Volldiff m vs matthias @ workflows origin/main 579633c (normalisiert: Namen/IDs/Quellen-Suffixe maskiert)
+--- m(norm)
++++ matthias(norm)
+@@ -521,41 +521,201 @@
+   {
+    "name": "Dispatch: Kategorie",
+    "parameters": {
+-    "dataType": "string",
+-    "fallbackOutput": "extra",
+     "mode": "rules",
++    "options": {
++     "fallbackOutput": "extra"
++    },
+     "rules": {
+-     "rules": [
+-      {
+-       "value2": "Lieferung / Versand"
+-      },
+-      {
+-       "value2": "Newsletter / Werbung"
+-      },
+-      {
+-       "value2": "Rechnung / Finanzen"
+-      },
+-      {
+-       "value2": "Account / Sicherheit"
+-      },
+-      {
+-       "value2": "Vertrag"
+-      },
+-      {
+-       "value2": "Termin / Kalender"
+-      },
+-      {
+-       "value2": "Retoure"
+-      },
+-      {
+-       "value2": "Review / Sonstiges"
+-      }
+-     ]
+-    },
+-    "value1": "={{ $json.category }}"
++     "values": [
++      {
++       "conditions": {
++        "combinator": "and",
++        "conditions": [
++         {
++          "leftValue": "={{ $json.category }}",
++          "operator": {
++           "name": "filter.operator.equals",
++           "operation": "equals",
++           "type": "string"
++          },
++          "rightValue": "Lieferung / Versand"
++         }
++        ],
++        "options": {
++         "caseSensitive": true,
++         "leftValue": "",
++         "typeValidation": "strict"
++        }
++       },
++       "outputKey": "Lieferung / Versand",
++       "renameOutput": true
++      },
++      {
++       "conditions": {
++        "combinator": "and",
++        "conditions": [
++         {
++          "leftValue": "={{ $json.category }}",
++          "operator": {
++           "name": "filter.operator.equals",
++           "operation": "equals",
++           "type": "string"
++          },
++          "rightValue": "Newsletter / Werbung"
++         }
++        ],
++        "options": {
++         "caseSensitive": true,
++         "leftValue": "",
++         "typeValidation": "strict"
++        }
++       },
++       "outputKey": "Newsletter / Werbung",
++       "renameOutput": true
++      },
++      {
++       "conditions": {
++        "combinator": "and",
++        "conditions": [
++         {
++          "leftValue": "={{ $json.category }}",
++          "operator": {
++           "name": "filter.operator.equals",
++           "operation": "equals",
++           "type": "string"
++          },
++          "rightValue": "Rechnung / Finanzen"
++         }
++        ],
++        "options": {
++         "caseSensitive": true,
++         "leftValue": "",
++         "typeValidation": "strict"
++        }
++       },
++       "outputKey": "Rechnung / Finanzen",
++       "renameOutput": true
++      },
++      {
++       "conditions": {
++        "combinator": "and",
++        "conditions": [
++         {
++          "leftValue": "={{ $json.category }}",
++          "operator": {
++           "name": "filter.operator.equals",
++           "operation": "equals",
++           "type": "string"
++          },
++          "rightValue": "Account / Sicherheit"
++         }
++        ],
++        "options": {
++         "caseSensitive": true,
++         "leftValue": "",
++         "typeValidation": "strict"
++        }
++       },
++       "outputKey": "Account / Sicherheit",
++       "renameOutput": true
++      },
++      {
++       "conditions": {
++        "combinator": "and",
++        "conditions": [
++         {
++          "leftValue": "={{ $json.category }}",
++          "operator": {
++           "name": "filter.operator.equals",
++           "operation": "equals",
++           "type": "string"
++          },
++          "rightValue": "Vertrag"
++         }
++        ],
++        "options": {
++         "caseSensitive": true,
++         "leftValue": "",
++         "typeValidation": "strict"
++        }
++       },
++       "outputKey": "Vertrag",
++       "renameOutput": true
++      },
++      {
++       "conditions": {
++        "combinator": "and",
++        "conditions": [
++         {
++          "leftValue": "={{ $json.category }}",
++          "operator": {
++           "name": "filter.operator.equals",
++           "operation": "equals",
++           "type": "string"
++          },
++          "rightValue": "Termin / Kalender"
++         }
++        ],
++        "options": {
++         "caseSensitive": true,
++         "leftValue": "",
++         "typeValidation": "strict"
++        }
++       },
++       "outputKey": "Termin / Kalender",
++       "renameOutput": true
++      },
++      {
++       "conditions": {
++        "combinator": "and",
++        "conditions": [
++         {
++          "leftValue": "={{ $json.category }}",
++          "operator": {
++           "name": "filter.operator.equals",
++           "operation": "equals",
++           "type": "string"
++          },
++          "rightValue": "Retoure"
++         }
++        ],
++        "options": {
++         "caseSensitive": true,
++         "leftValue": "",
++         "typeValidation": "strict"
++        }
++       },
++       "outputKey": "Retoure",
++       "renameOutput": true
++      },
++      {
++       "conditions": {
++        "combinator": "and",
++        "conditions": [
++         {
++          "leftValue": "={{ $json.category }}",
++          "operator": {
++           "name": "filter.operator.equals",
++           "operation": "equals",
++           "type": "string"
++          },
++          "rightValue": "Review / Sonstiges"
++         }
++        ],
++        "options": {
++         "caseSensitive": true,
++         "leftValue": "",
++         "typeValidation": "strict"
++        }
++       },
++       "outputKey": "Review / Sonstiges",
++       "renameOutput": true
++      }
++     ]
++    }
+    },
+    "type": "n8n-nodes-base.switch",
+-   "typeVersion": 1
++   "typeVersion": 3
+   },
+   {
+    "name": "Domain bekannt?",
+@@ -606,7 +766,7 @@
+   {
+    "name": "Forward zu Paperless",
+    "parameters": {
+-    "jsonBody": "={{ JSON.stringify({ tool_name: 'imap_write.forward', source: 'mail_dispatch_TWIN', adapter: 'jarvis-imap-writer', operation: 'forward', action_type: 'imap_write.forward', idempotency_key: 'mail-forward-TWIN-' + $('Mail minimieren').first().json.imap_uid, payload: { account_id: 'm', uid: $('Mail minimieren').first().json.imap_uid, source_folder: 'INBOX' } }) }}",
++    "jsonBody": "={{ JSON.stringify({ tool_name: 'imap_write.forward', source: 'mail_dispatch_TWIN', adapter: 'jarvis-imap-writer', operation: 'forward', action_type: 'imap_write.forward', idempotency_key: 'mail-forward-TWIN-' + $('Mail minimieren').first().json.imap_uid, payload: { account_id: 'TWIN', uid: $('Mail minimieren').first().json.imap_uid, source_folder: 'INBOX', from: $('Mail minimieren').first().json.from_domain, subject: $('Mail minimieren').first().json.subject } }) }}",
+     "method": "POST",
+     "options": {
+      "response": {
+@@ -702,7 +862,7 @@
+   {
+    "name": "Move zu Newsletter",
+    "parameters": {
+-    "jsonBody": "={{ JSON.stringify({ tool_name: 'imap_write.move', source: 'mail_dispatch_TWIN', adapter: 'jarvis-imap-writer', operation: 'move', action_type: 'imap_write.move', idempotency_key: 'mail-move-TWIN-' + $('Mail minimieren').first().json.imap_uid, payload: { account_id: 'm', uid: $('Mail minimieren').first().json.imap_uid, source_folder: 'INBOX', target_folder: 'INBOX.Newsletter' } }) }}",
++    "jsonBody": "={{ JSON.stringify({ tool_name: 'imap_write.move', source: 'mail_dispatch_TWIN', adapter: 'jarvis-imap-writer', operation: 'move', action_type: 'imap_write.move', idempotency_key: 'mail-move-TWIN-' + $('Mail minimieren').first().json.imap_uid, payload: { account_id: 'TWIN', uid: $('Mail minimieren').first().json.imap_uid, source_folder: 'INBOX', target_folder: 'INBOX.Newsletter', from: $('Mail minimieren').first().json.from_domain, subject: $('Mail minimieren').first().json.subject } }) }}",
+     "method": "POST",
+     "options": {
+      "response": {
+# m nodes/conn-lines: 1283, matthias: 1443

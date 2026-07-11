@@ -1,0 +1,40 @@
+# OP-0.2 Node-Graph um 'Domain bekannt?' + LLM-Downstream (dispatch-m-v1.5 @ workflows origin/main 579633c)
+
+## 'Domain bekannt?' — volle Parameter (jq):
+{
+  "type": "n8n-nodes-base.switch",
+  "typeVersion": 1,
+  "parameters": {
+    "dataType": "string",
+    "value1": "={{ $json.domain_known ? 'true' : 'false' }}",
+    "rules": {
+      "rules": [
+        {
+          "value2": "true"
+        }
+      ]
+    },
+    "fallbackOutput": "extra"
+  }
+}
+
+## 'Domain-Check' jsCode:
+const domain = $('Mail klassifizieren').first().json.from_domain;
+const known = $('Shop-Liste laden').first().json.known_shops;
+const domain_known = Array.isArray(known) && known.includes(domain);
+return [{ json: { domain_known } }];
+
+## Verbindungen (jq .connections) — relevante Knoten mit Output-Index:
+Paperless Gate [out 0] -> Shop-Liste laden
+Shop-Liste laden [out 0] -> Domain-Check
+Domain-Check [out 0] -> Domain bekannt?
+Domain bekannt? [out 0] -> LLM-Bestätigung
+Domain bekannt? [out 1] -> Nextcloud Task Rechnung
+LLM-Bestätigung [out 0] -> LLM-Antwort prüfen
+LLM-Antwort prüfen [out 0] -> LLM-Ergebnis?
+LLM-Ergebnis? [out 0] -> Forward zu Paperless
+LLM-Ergebnis? [out 1] -> Nextcloud Task Rechnung
+Forward zu Paperless [out 0] -> ntfy Rechnung weitergeleitet
+Forward zu Paperless [out 1] -> ntfy Dispatch-Transport-Fehler
+Nextcloud Task Rechnung [out 0] -> ntfy Rechnung unbekannt
+Nextcloud Task Rechnung [out 1] -> ntfy Dispatch-Transport-Fehler

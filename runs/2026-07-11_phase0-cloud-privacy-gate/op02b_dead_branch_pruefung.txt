@@ -1,0 +1,116 @@
+# OP-0.2b VOLLSTÄNDIGER Pfad zum 'Paperless Gate' (dispatch-m-v1.5 @ 579633c) — Dead-Branch-Prüfung (#21 Befund 2)
+## Alle Verbindungen (vollständig):
+Email Trigger (IMAP) [out 0] -> Mail minimieren
+Mail minimieren [out 0] -> Mail klassifizieren
+Mail klassifizieren [out 0] -> known-senders laden
+Manueller Teststart [out 0] -> Test-Mail erzeugen
+Test-Mail erzeugen [out 0] -> 
+Dispatch: Kategorie [out 0] -> Execute Tracking
+Dispatch: Kategorie [out 1] -> Confidence Filter Newsletter
+Dispatch: Kategorie [out 2] -> Paperless Gate, Trigger u037 Intent Extraction
+Dispatch: Kategorie [out 3] -> Account Payload
+Dispatch: Kategorie [out 4] -> Abo Payload, Trigger u037 Intent Extraction
+Dispatch: Kategorie [out 5] -> Nextcloud Task Termin, Trigger u037 Intent Extraction
+Dispatch: Kategorie [out 6] -> ntfy Retoure Push
+Dispatch: Kategorie [out 7] -> ntfy Sonstige Push, Trigger u037 Intent Extraction
+Dispatch: Kategorie [out 8] -> ntfy Sonstige Push
+Confidence Filter Newsletter [out 0] -> Move zu Newsletter
+Move zu Newsletter [out 0] -> ntfy Newsletter Push
+Move zu Newsletter [out 1] -> ntfy Dispatch-Transport-Fehler
+Paperless Gate [out 0] -> Shop-Liste laden
+Shop-Liste laden [out 0] -> Domain-Check
+Domain-Check [out 0] -> Domain bekannt?
+Domain bekannt? [out 0] -> LLM-Bestätigung
+Domain bekannt? [out 1] -> Nextcloud Task Rechnung
+LLM-Bestätigung [out 0] -> LLM-Antwort prüfen
+LLM-Antwort prüfen [out 0] -> LLM-Ergebnis?
+LLM-Ergebnis? [out 0] -> Forward zu Paperless
+LLM-Ergebnis? [out 1] -> Nextcloud Task Rechnung
+Forward zu Paperless [out 0] -> ntfy Rechnung weitergeleitet
+Forward zu Paperless [out 1] -> ntfy Dispatch-Transport-Fehler
+Nextcloud Task Rechnung [out 0] -> ntfy Rechnung unbekannt
+Nextcloud Task Rechnung [out 1] -> ntfy Dispatch-Transport-Fehler
+Phishing Payload [out 0] -> ntfy Phishing Push, Nextcloud Task Phishing
+Account Payload [out 0] -> ntfy Account Push
+Abo Payload [out 0] -> Nextcloud Task Abo, ntfy Abo Push
+Paperless Gate IF [out 0] -> Nextcloud Task Dokument
+Paperless Gate IF [out 1] -> Normalisierung Kategorie
+ntfy Shadow Dokument [out 0] -> 
+Nextcloud Task Dokument [out 0] -> 
+Nextcloud Task Dokument [out 1] -> ntfy Dispatch-Transport-Fehler
+Nextcloud Task Termin [out 0] -> 
+Nextcloud Task Termin [out 1] -> ntfy Dispatch-Transport-Fehler
+ntfy Retoure Push [out 0] -> 
+Normalisierung Kategorie [out 0] -> Kategorie unbekannt?
+Nextcloud Task Phishing [out 0] -> 
+Nextcloud Task Phishing [out 1] -> ntfy Dispatch-Transport-Fehler
+Nextcloud Task Abo [out 0] -> 
+Nextcloud Task Abo [out 1] -> ntfy Dispatch-Transport-Fehler
+ntfy Dispatch-Transport-Fehler [out 0] -> Dispatch-Transport-Stop
+known-senders laden [out 0] -> known-sender Pre-Filter
+known-sender Pre-Filter [out 0] -> Paperless Gate IF
+Kategorie unbekannt? [out 0] -> ntfy Kategorie unbekannt
+Kategorie unbekannt? [out 1] -> Dispatch: Kategorie
+ntfy Kategorie unbekannt [out 0] -> Dispatch: Kategorie
+
+## 'Paperless Gate IF' Parameter:
+{
+  "type": "n8n-nodes-base.if",
+  "typeVersion": 1,
+  "parameters": {
+    "conditions": {
+      "boolean": [
+        {
+          "value1": "={{ $json.paperless_candidate }}",
+          "value2": true
+        }
+      ]
+    }
+  }
+}
+
+## 'Dispatch: Kategorie' Switch-Regeln:
+{"dataType":"string","value1":"={{ $json.category }}","rules":{"rules":[{"value2":"Lieferung / Versand"},{"value2":"Newsletter / Werbung"},{"value2":"Rechnung / Finanzen"},{"value2":"Account / Sicherheit"},{"value2":"Vertrag"},{"value2":"Termin / Kalender"},{"value2":"Retoure"},{"value2":"Review / Sonstiges"}]},"fallbackOutput":"extra","mode":"rules"}
+## 'Normalisierung Kategorie' jsCode (dispatch-m-v1.5):
+// Normalisierung Kategorie — Klassifikator v1.5
+// Erweitert die FIX-M Normalisierung (vor 'Dispatch: Kategorie') um:
+//  - known-sender Pre-Filter-Vorrang (Override der Heuristik)
+//  - classification_source / low_confidence / raw_category
+//  - Markierung nicht zuordenbarer Heuristik-Kategorie ('Allgemein') fuer ntfy-Alert
+//
+// WHITELIST = die im Dispatch-Switch definierten 7 Kategorien mit eigenem Pfad.
+// Alles andere -> Review / Sonstiges (kein eigener Action-Pfad, SHADOW-Review).
+const WHITELIST = ["Lieferung / Versand", "Newsletter / Werbung", "Rechnung / Finanzen", "Account / Sicherheit", "Vertrag", "Termin / Kalender", "Retoure"];
+const REVIEW = 'Review / Sonstiges';
+
+for (const item of $input.all()) {
+  const j = item.json;
+  const rawCategory = j.category;          // Output der Heuristik 'Mail klassifizieren'
+  j.raw_category = rawCategory;
+
+  if (j._known_sender_match && j._known_sender_category) {
+    // known-sender Pre-Filter hat Vorrang vor der Heuristik.
+    j.category = j._known_sender_category;
+    j.classification_source = 'known-sender';
+    j.low_confidence = false;
+  } else {
+    j.classification_source = 'classifier';
+    // 'Allgemein' = Heuristik konnte nicht zuordnen -> low confidence + Alert.
+    j.low_confidence = (rawCategory === 'Allgemein');
+  }
+
+  // Whitelist-Routing: nicht-geroutete Kategorien -> Review / Sonstiges.
+  if (!WHITELIST.includes(j.category)) {
+    j.category_original = rawCategory;
+    j.category = REVIEW;
+  }
+
+  // interne Pre-Filter-Flags entfernen.
+  delete j._known_sender_match;
+  delete j._known_sender_category;
+}
+return $input.all();
+
+
+## 'Kategorie unbekannt?' Parameter:
+{"conditions":{"boolean":[{"value1":"={{ $json.low_confidence }}","value2":true}]}}

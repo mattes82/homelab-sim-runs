@@ -1,0 +1,42 @@
+# OP-0.1 Kategorie-Taxonomie @ workflows origin/main 579633c
+## cmd: grep -n "category = '" auf extrahiertem 'Mail klassifizieren'-Code (Zwilling m):
+311:  let category = 'Allgemein';
+320:    category = 'Allgemein';
+327:    category = 'Kassenbon';
+334:    category = 'Allgemein';
+349:    category = 'Newsletter / Werbung';
+358:    category = 'Retoure';
+367:    category = 'Lieferung / Versand';
+388:    category = 'Rechnung / Finanzen';
+403:    category = 'Vertrag';
+416:    category = 'Versicherung';
+432:    category = 'Steuer';
+455:    category = 'Bank';
+469:    category = 'Garantie';
+483:    category = 'Account / Sicherheit';
+498:    category = 'Termin / Kalender';
+
+## Zwilling matthias:
+311:  let category = 'Allgemein';
+320:    category = 'Allgemein';
+327:    category = 'Kassenbon';
+334:    category = 'Allgemein';
+349:    category = 'Newsletter / Werbung';
+358:    category = 'Retoure';
+367:    category = 'Lieferung / Versand';
+388:    category = 'Rechnung / Finanzen';
+403:    category = 'Vertrag';
+416:    category = 'Versicherung';
+432:    category = 'Steuer';
+455:    category = 'Bank';
+469:    category = 'Garantie';
+483:    category = 'Account / Sicherheit';
+498:    category = 'Termin / Kalender';
+
+## diff der beiden Klassifikator-Codes (leer = identisch):
+IDENTISCH
+
+## PERSONAL_CATEGORIES frisch @ docker origin/main 002acea:
+23:PERSONAL_CATEGORIES = {"Account / Sicherheit", "Bank", "Steuer"}
+112:    if not persoenlich and category in PERSONAL_CATEGORIES:
+152:    elif persoenlich or category in PERSONAL_CATEGORIES:

@@ -1,0 +1,5 @@
+# Isolations-Recheck nach Netz-OPs (VM300 -> Prod-IPs, Erwartung: alle Timeout/unreachable)
+192.168.30.33:3000 timeout/unreachable OK
+192.168.30.37:3000 timeout/unreachable OK
+192.168.30.34:8080 timeout/unreachable OK
+192.168.30.45:22 timeout/unreachable OK

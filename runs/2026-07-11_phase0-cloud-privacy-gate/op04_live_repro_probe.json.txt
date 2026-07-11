@@ -1,0 +1,159 @@
+[pg] fx-bank-att: exec=375/success cat=Bank LLM=False last=Nextcloud Task Dokument
+[pg] fx-steuer-noatt: exec=377/success cat=Steuer LLM=False last=Nextcloud Task Dokument
+[pg] fx-shop-rechnung: exec=379/success cat=Rechnung / Finanzen LLM=False last=Nextcloud Task Dokument
+[pg] fx-bank-noatt: exec=381/success cat=Bank LLM=False last=ntfy Sonstige Push
+{
+  "probe": "pg_probe Phase-0 OP-0.4/0.5",
+  "webhook": "http://127.0.0.1:5679/webhook/sim-mail-raw",
+  "workflow": "So3Ktjz9tZDyhmgy",
+  "fixtures": [
+    {
+      "fixture": "fx-bank-att",
+      "erwartung": "candidate=true -> Paperless Gate IF(true) -> Nextcloud Task Dokument",
+      "http": 200,
+      "exec_id": 375,
+      "exec_status": "success",
+      "nodes_executed": [
+        "Mail klassifizieren",
+        "Mail minimieren",
+        "Nextcloud Task Dokument",
+        "Paperless Gate IF",
+        "Sim Mail Raw Entry",
+        "Sim Mail Raw Unwrap",
+        "known-sender Pre-Filter",
+        "known-senders laden"
+      ],
+      "last_node": "Nextcloud Task Dokument",
+      "category": "Bank",
+      "paperless_candidate": true,
+      "LLM_BESTAETIGUNG_EXEKUTIERT": false,
+      "paperless_gate_output_leer": false,
+      "nextcloud_task_dokument_ran": true
+    },
+    {
+      "fixture": "fx-steuer-noatt",
+      "erwartung": "candidate=true (Steuer ohne Anhang) -> IF(true) -> Nextcloud Task Dokument",
+      "http": 200,
+      "exec_id": 377,
+      "exec_status": "success",
+      "nodes_executed": [
+        "Mail klassifizieren",
+        "Mail minimieren",
+        "Nextcloud Task Dokument",
+        "Paperless Gate IF",
+        "Sim Mail Raw Entry",
+        "Sim Mail Raw Unwrap",
+        "known-sender Pre-Filter",
+        "known-senders laden"
+      ],
+      "last_node": "Nextcloud Task Dokument",
+      "category": "Steuer",
+      "paperless_candidate": true,
+      "LLM_BESTAETIGUNG_EXEKUTIERT": false,
+      "paperless_gate_output_leer": false,
+      "nextcloud_task_dokument_ran": true
+    },
+    {
+      "fixture": "fx-shop-rechnung",
+      "erwartung": "Gegen-Fixture: Rechnung/Finanzen + candidate=true -> IF(true) -> Nextcloud Task Dokument (NICHT LLM)",
+      "http": 200,
+      "exec_id": 379,
+      "exec_status": "success",
+      "nodes_executed": [
+        "Mail klassifizieren",
+        "Mail minimieren",
+        "Nextcloud Task Dokument",
+        "Paperless Gate IF",
+        "Sim Mail Raw Entry",
+        "Sim Mail Raw Unwrap",
+        "known-sender Pre-Filter",
+        "known-senders laden"
+      ],
+      "last_node": "Nextcloud Task Dokument",
+      "category": "Rechnung / Finanzen",
+      "paperless_candidate": true,
+      "LLM_BESTAETIGUNG_EXEKUTIERT": false,
+      "paperless_gate_output_leer": false,
+      "nextcloud_task_dokument_ran": true
+    },
+    {
+      "fixture": "fx-bank-noatt",
+      "erwartung": "Bank ohne Anhang: candidate=false -> Normalisierung: Bank nicht in WHITELIST -> Review/Sonstiges -> ntfy (+u037)",
+      "http": 200,
+      "exec_id": 381,
+      "exec_status": "success",
+      "nodes_executed": [
+        "Dispatch: Kategorie",
+        "Kategorie unbekannt?",
+        "Mail klassifizieren",
+        "Mail minimieren",
+        "Normalisierung Kategorie",
+        "Paperless Gate IF",
+        "Sim Mail Raw Entry",
+        "Sim Mail Raw Unwrap",
+        "Trigger u037 Intent Extraction",
+        "known-sender Pre-Filter",
+        "known-senders laden",
+        "ntfy Sonstige Push"
+      ],
+      "last_node": "ntfy Sonstige Push",
+      "category": "Bank",
+      "paperless_candidate": false,
+      "LLM_BESTAETIGUNG_EXEKUTIERT": false,
+      "paperless_gate_output_leer": false,
+      "nextcloud_task_dokument_ran": false
+    }
+  ],
+  "KERNBEFUND_llm_node_je_exekutiert": false
+}
+{
+  "fixture": "fx-zahlungserinnerung-att (Rechnung ohne documentHint)",
+  "exec_id": 383,
+  "exec_status": "error",
+  "category": "Lieferung / Versand",
+  "paperless_candidate": false,
+  "nodes_executed": [
+    "Dispatch: Kategorie",
+    "Execute Tracking",
+    "Kategorie unbekannt?",
+    "Mail klassifizieren",
+    "Mail minimieren",
+    "Normalisierung Kategorie",
+    "Paperless Gate IF",
+    "Sim Mail Raw Entry",
+    "Sim Mail Raw Unwrap",
+    "known-sender Pre-Filter",
+    "known-senders laden"
+  ],
+  "last_node": "Execute Tracking",
+  "PAPERLESS_GATE_EXEKUTIERT": false,
+  "paperless_gate_output_items": null,
+  "LLM_BESTAETIGUNG_EXEKUTIERT": false,
+  "shop_liste_laden_exekutiert": false
+}
+{
+  "fixture": "fx-zahlungserinnerung-v2 (Rechnung/Finanzen, candidate=false — korrigiert, ohne Versand-Woerter)",
+  "exec_id": 384,
+  "exec_status": "success",
+  "category": "Rechnung / Finanzen",
+  "paperless_candidate": false,
+  "nodes_executed": [
+    "Dispatch: Kategorie",
+    "Kategorie unbekannt?",
+    "Mail klassifizieren",
+    "Mail minimieren",
+    "Normalisierung Kategorie",
+    "Paperless Gate",
+    "Paperless Gate IF",
+    "Sim Mail Raw Entry",
+    "Sim Mail Raw Unwrap",
+    "Trigger u037 Intent Extraction",
+    "known-sender Pre-Filter",
+    "known-senders laden"
+  ],
+  "last_node": "Paperless Gate",
+  "PAPERLESS_GATE_EXEKUTIERT": true,
+  "paperless_gate_output_items": 0,
+  "LLM_BESTAETIGUNG_EXEKUTIERT": false,
+  "shop_liste_laden_exekutiert": false
+}

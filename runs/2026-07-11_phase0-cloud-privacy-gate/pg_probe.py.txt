@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+"""pg_probe.py — Phase-0-Repro-Versuch Cloud-Privacy-Gate (Commission 2026-07-11).
+
+Wegwerf-Probe (VM300, /tmp): postet 4 Fixtures auf den sim-mail-raw-Entry des
+importierten Dispatch-v1.5 (matthias-Zwilling, So3Ktjz9tZDyhmgy) und liest aus
+der n8n-DB (read-only), welche Nodes exekutiert haben. Kernfrage: erreicht
+IRGENDEINE Fixture den Node 'LLM-Bestätigung'? (Erwartung nach Graph-Analyse:
+NEIN — Dead-Branch #21/Befund 2 liegt VOR der LLM-Kette.)
+
+DB-/Unflatten-Mechanik = mtrun.py (#21). Nur stdlib. Keine Prod-Berührung.
+"""
+import json, sqlite3, sys, time, urllib.request, urllib.error
+
+DB = "/var/lib/docker/volumes/jarvis-sim-n8n_n8n-sim-data/_data/database.sqlite"
+N8N = "http://127.0.0.1:5679"
+RAW_WEBHOOK = f"{N8N}/webhook/sim-mail-raw"
+DISPATCH_WF = "So3Ktjz9tZDyhmgy"
+TERMINAL = ("success", "error", "crashed", "canceled")
+
+FIXTURES = [
+    {"name": "fx-bank-att", "erwartung_kette": "candidate=true -> Paperless Gate IF(true) -> Nextcloud Task Dokument",
+     "mail": {"from": "service@stromanbieter.de", "subject": "Ihr Kontoauszug Januar liegt vor",
+              "text": "Ihr Kontoauszug ist da. IBAN DE00 1234. Ihr Depot-Statement im Anhang.",
+              "attachmentCount": 1, "uid": 7101}},
+    {"name": "fx-steuer-noatt", "erwartung_kette": "candidate=true (Steuer ohne Anhang) -> IF(true) -> Nextcloud Task Dokument",
+     "mail": {"from": "info@stromanbieter.de", "subject": "Ihr Steuerbescheid 2025",
+              "text": "Das Finanzamt hat Ihren Steuerbescheid erstellt.",
+              "attachmentCount": 0, "uid": 7102}},
+    {"name": "fx-shop-rechnung", "erwartung_kette": "Gegen-Fixture: Rechnung/Finanzen + candidate=true -> IF(true) -> Nextcloud Task Dokument (NICHT LLM)",
+     "mail": {"from": "shop@stromanbieter.de", "subject": "Rechnung 4711 zu Ihrer Bestellung",
+              "text": "Ihre Rechnung als PDF im Anhang. Vielen Dank fuer Ihren Einkauf.",
+              "attachmentCount": 1, "uid": 7103}},
+    {"name": "fx-bank-noatt", "erwartung_kette": "Bank ohne Anhang: candidate=false -> Normalisierung: Bank nicht in WHITELIST -> Review/Sonstiges -> ntfy (+u037)",
+     "mail": {"from": "bank@stromanbieter.de", "subject": "Neues Bankkonto Information",
+              "text": "Ihr neues Bankkonto wurde angelegt. IBAN und BIC folgen per Post.",
+              "attachmentCount": 0, "uid": 7104}},
+]
+
+def db():
+    return sqlite3.connect(f"file:{DB}?mode=ro", uri=True, timeout=15)
+
+def max_exec_id(wf_id):
+    con = db(); r = con.execute("SELECT MAX(id) FROM execution_entity WHERE workflowId=?", (wf_id,)).fetchone(); con.close()
+    return r[0] or 0
+
+def wait_new_exec(wf_id, prev, timeout=45):
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        con = db()
+        rows = con.execute("SELECT id, finished, status FROM execution_entity WHERE workflowId=? AND id>? ORDER BY id", (wf_id, prev)).fetchall()
+        con.close()
+        for (eid, fin, st) in rows:
+            if fin == 1 or st in TERMINAL:
+                return eid, st
+        time.sleep(1)
+    return None, None
+
+def unflatten(data_str):
+    arr = json.loads(data_str); resolved = [None] * len(arr)
+    def resolve(i):
+        if resolved[i] is not None: return resolved[i]
+        val = arr[i]
+        if isinstance(val, dict):
+            out = {}; resolved[i] = out
+            for k, v in val.items(): out[k] = deref(v)
+            return out
+        if isinstance(val, list):
+            out = []; resolved[i] = out
+            for v in val: out.append(deref(v))
+            return out
+        resolved[i] = val; return val
+    def deref(v):
+        if isinstance(v, str) and v.isdigit() and int(v) < len(arr): return resolve(int(v))
+        return v
+    return resolve(0)
+
+def exec_data(eid):
+    con = db(); r = con.execute("SELECT data FROM execution_data WHERE executionId=?", (eid,)).fetchone(); con.close()
+    return unflatten(r[0]) if r else None
+
+def node_out(edata, node_name):
+    try:
+        run = edata["resultData"]["runData"][node_name][0]
+        return run["data"]["main"][0][0]["json"]
+    except (KeyError, IndexError, TypeError):
+        return None
+
+def post(url, body):
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
+                                 headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return r.status
+    except urllib.error.HTTPError as e:
+        return e.code
+
+def main():
+    out = {"probe": "pg_probe Phase-0 OP-0.4/0.5", "webhook": RAW_WEBHOOK, "workflow": DISPATCH_WF, "fixtures": []}
+    for fx in FIXTURES:
+        m = fx["mail"]
+        body = {"from": m["from"], "subject": m["subject"], "textPlain": m["text"],
+                "date": "2026-07-11T08:00:00.000Z", "messageId": f"<{fx['name']}@sim.local>",
+                "attributes": {"uid": m["uid"]}}
+        if m["attachmentCount"]:
+            body["attachmentCount"] = m["attachmentCount"]
+        prev = max_exec_id(DISPATCH_WF)
+        http = post(RAW_WEBHOOK, body)
+        eid, status = wait_new_exec(DISPATCH_WF, prev)
+        row = {"fixture": fx["name"], "erwartung": fx["erwartung_kette"], "http": http,
+               "exec_id": eid, "exec_status": status}
+        if eid:
+            ed = exec_data(eid)
+            run_nodes = sorted((ed.get("resultData", {}) or {}).get("runData", {}).keys())
+            klass = node_out(ed, "Mail klassifizieren") or {}
+            row.update({
+                "nodes_executed": run_nodes,
+                "last_node": (ed.get("resultData", {}) or {}).get("lastNodeExecuted"),
+                "category": klass.get("category"),
+                "paperless_candidate": klass.get("paperless_candidate"),
+                "LLM_BESTAETIGUNG_EXEKUTIERT": "LLM-Bestätigung" in run_nodes,
+                "paperless_gate_output_leer": (node_out(ed, "Paperless Gate") is None and "Paperless Gate" in run_nodes),
+                "nextcloud_task_dokument_ran": "Nextcloud Task Dokument" in run_nodes,
+            })
+        out["fixtures"].append(row)
+        print(f"[pg] {fx['name']}: exec={eid}/{status} cat={row.get('category')} "
+              f"LLM={row.get('LLM_BESTAETIGUNG_EXEKUTIERT')} last={row.get('last_node')}", flush=True)
+    out["KERNBEFUND_llm_node_je_exekutiert"] = any(r.get("LLM_BESTAETIGUNG_EXEKUTIERT") for r in out["fixtures"])
+    print(json.dumps(out, ensure_ascii=False, indent=2))
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,27 @@
+# OP-0.3 Fallback-Route 'Nextcloud Task Rechnung' + ntfy (dispatch-m-v1.5)
+## Node 'Nextcloud Task Rechnung' (jq: type/typeVersion/jsonBody):
+n8n-nodes-base.httpRequest
+4.2
+http://localhost:5678/webhook/jarvis-action-dispatch
+={{ JSON.stringify({ tool_name: 'nextcloud_task.create', source: 'mail_dispatch_m', adapter: 'jarvis-nextcloud-task-writer', operation: 'create', action_type: 'nextcloud_task.create', idempotency_key: 'mail-task-rechnung-m-' + $('Mail klassifizieren').first().json.imap_uid, payload: { title: 'Rechnung pruefen: ' + $('Mail klassifizieren').first().json.from_domain, task_list: 'Inbox' } }) }}
+
+## Node 'ntfy Rechnung unbekannt' (url + body):
+http://ntfy.lan/HomeLab-Kritisch
+={{ $('Mail klassifizieren').first().json.from_domain + ' - bitte manuell pruefen' }}
+
+
+## Zwillings-Check matthias: Connections um Domain bekannt?/LLM identisch?
+Domain bekannt? [out 0] -> LLM-Bestätigung
+Domain bekannt? [out 1] -> Nextcloud Task Rechnung
+LLM-Ergebnis? [out 0] -> Forward zu Paperless
+LLM-Ergebnis? [out 1] -> Nextcloud Task Rechnung
+Nextcloud Task Rechnung [out 0] -> ntfy Rechnung unbekannt
+Nextcloud Task Rechnung [out 1] -> ntfy Dispatch-Transport-Fehler
+--- (m)
+Domain bekannt? [out 0] -> LLM-Bestätigung
+Domain bekannt? [out 1] -> Nextcloud Task Rechnung
+LLM-Ergebnis? [out 0] -> Forward zu Paperless
+LLM-Ergebnis? [out 1] -> Nextcloud Task Rechnung
+Nextcloud Task Rechnung [out 0] -> ntfy Rechnung unbekannt
+Nextcloud Task Rechnung [out 1] -> ntfy Dispatch-Transport-Fehler
+--- (matthias)
