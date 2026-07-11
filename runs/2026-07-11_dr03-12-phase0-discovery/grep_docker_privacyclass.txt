@@ -1,0 +1,64 @@
+# OP-0.3-Grep homelab-docker @ 002acea7955a1a240c7f07927c7163cf8a612275
+# cmd: git grep -n -iE 'privacy_class|routing_policy|data_class|datenklasse' origin/main
+origin/main:CLAUDE.md:60:### Datenklassen
+origin/main:jarvis-action-state/app/mail_move.py:9:      the move alone. dienstlich → privacy_class C → blocked from every auto action.
+origin/main:jarvis-action-state/app/mail_move.py:37:# (only category/confidence/flags/data_class exist). The gate ENFORCES any marker
+origin/main:jarvis-action-state/app/mail_move.py:88:    privacy_class = "C" if (lowered & CLASS_C_MARKERS) else "B"
+origin/main:jarvis-action-state/app/mail_move.py:92:        "privacy_class": privacy_class,
+origin/main:jarvis-action-state/app/main.py:182:    data_class: str = Field(default="B", max_length=4)
+origin/main:jarvis-action-state/app/main.py:193:    data_class: str
+origin/main:jarvis-action-state/app/main.py:357:              data_class  TEXT NOT NULL DEFAULT 'B',
+origin/main:jarvis-action-state/app/main.py:529:        data_class=row["data_class"],
+origin/main:jarvis-action-state/app/main.py:1353:            (proposal_id, action_type, summary, decided_at, decided_by, data_class, tags_json)
+origin/main:jarvis-action-state/app/main.py:1362:                payload.data_class,
+origin/main:jarvis-action-state/app/promotion.py:27:  class_c_touches     <- memory_decisions.data_class='C' (PROXY — best available)
+origin/main:jarvis-action-state/app/promotion.py:67:    "class_c_touches: derived from memory_decisions.data_class='C' (proxy).",
+origin/main:jarvis-action-state/app/promotion.py:226:        "SELECT COUNT(*) AS n FROM memory_decisions WHERE action_type = ? AND data_class = 'C'",
+origin/main:jarvis-action-state/app/promotion.py:471:        "SELECT COUNT(*) AS n FROM memory_decisions WHERE action_type = ? AND data_class = 'C'",
+origin/main:jarvis-action-state/tests/test_mail_move.py:60:def test_dienstlich_marker_blocks_and_sets_privacy_class_c(client):
+origin/main:jarvis-action-state/tests/test_mail_move.py:65:    assert body["privacy_class"] == "C"
+origin/main:jarvis-lifeops/app/db.py:89:            data_class               TEXT NOT NULL DEFAULT 'A',
+origin/main:jarvis-lifeops/app/db.py:191:    Singleton (feste id ``main_persona``), privacy_class A, local_only. Haelt die
+origin/main:jarvis-lifeops/app/db.py:205:            privacy_class      TEXT NOT NULL DEFAULT 'A',
+origin/main:jarvis-lifeops/app/models.py:96:    data_class: DataClass = "A"
+origin/main:jarvis-lifeops/app/models.py:106:    data_class: Optional[DataClass] = None
+origin/main:jarvis-lifeops/app/models.py:117:    data_class: DataClass
+origin/main:jarvis-lifeops/app/models.py:394:# Persona-Layer (commission 2026-07-01, OP-1) — privacy_class A, local_only
+origin/main:jarvis-lifeops/app/models.py:418:    """PUT-Body. privacy_class/local_only sind Invarianten und nicht setzbar."""
+origin/main:jarvis-lifeops/app/models.py:423:    privacy_class: Literal["A"] = "A"
+origin/main:jarvis-lifeops/app/relevance.py:5:Klassifikationsobjekt (homelab_jarvis.md §2.5: privacy_class / sensitivity_level /
+origin/main:jarvis-lifeops/app/relevance.py:6:routing_policy / learning_policy / content_logging) mit den festen Kopplungen.
+origin/main:jarvis-lifeops/app/relevance.py:10:dienstlich ⇒ privacy_class C ⇒ routing=blocked, learning=none, logging=none.
+origin/main:jarvis-lifeops/app/relevance.py:22:# personenbezogene Kategorien -> privacy_class A (auch ohne persönlich-Marker).
+origin/main:jarvis-lifeops/app/relevance.py:44:# §2.5 feste Kopplung je privacy_class: (routing_policy, learning_policy, content_logging)
+origin/main:jarvis-lifeops/app/relevance.py:151:        privacy_class = "C"
+origin/main:jarvis-lifeops/app/relevance.py:153:        privacy_class = "A"
+origin/main:jarvis-lifeops/app/relevance.py:155:        privacy_class = "B"
+origin/main:jarvis-lifeops/app/relevance.py:156:    routing_policy, learning_policy, content_logging = _COUPLING[privacy_class]
+origin/main:jarvis-lifeops/app/relevance.py:171:            "privacy_class": privacy_class,
+origin/main:jarvis-lifeops/app/relevance.py:173:            "routing_policy": routing_policy,
+origin/main:jarvis-lifeops/app/routers/persona.py:3:Singleton `privacy_class A`, `local_only`. GET liefert den gespeicherten Persona-
+origin/main:jarvis-lifeops/app/routers/persona.py:5:Befuellung durch Mattes). local_only/privacy_class sind Invarianten — nie per API
+origin/main:jarvis-lifeops/app/store.py:210:# Persona (Singleton, privacy_class A, local_only) — commission 2026-07-01 OP-1
+origin/main:jarvis-lifeops/app/store.py:226:    "privacy_class": "A",
+origin/main:jarvis-lifeops/app/store.py:251:    record["privacy_class"] = "A"     # invariant
+origin/main:jarvis-lifeops/seed/domains.yaml:8:    data_class: B
+origin/main:jarvis-lifeops/seed/domains.yaml:16:    data_class: B
+origin/main:jarvis-lifeops/seed/domains.yaml:24:    data_class: A
+origin/main:jarvis-lifeops/seed/domains.yaml:32:    data_class: B
+origin/main:jarvis-lifeops/seed/domains.yaml:40:    data_class: A
+origin/main:jarvis-lifeops/seed/domains.yaml:49:    data_class: A
+origin/main:jarvis-lifeops/seed/domains.yaml:57:    data_class: A
+origin/main:jarvis-lifeops/seed/domains.yaml:65:    data_class: A
+origin/main:jarvis-lifeops/seed/domains.yaml:74:    data_class: A
+origin/main:jarvis-lifeops/seed/domains.yaml:82:    data_class: B
+origin/main:jarvis-lifeops/seed/domains.yaml:90:    data_class: B
+origin/main:jarvis-lifeops/seed/persona.yaml:2:# privacy_class A, local_only. NUR konservative Platzhalter — KEINE echten
+origin/main:jarvis-lifeops/tests/test_persona.py:3:privacy_class A, local_only. Singleton wie person_profile. Der Store liefert
+origin/main:jarvis-lifeops/tests/test_persona.py:17:    assert body["privacy_class"] == "A"
+origin/main:jarvis-lifeops/tests/test_relevance.py:40:    assert b["classification"]["privacy_class"] == "B"
+origin/main:jarvis-lifeops/tests/test_relevance.py:65:    assert c["privacy_class"] == "C"
+origin/main:jarvis-lifeops/tests/test_relevance.py:66:    assert c["routing_policy"] == "blocked"
+origin/main:jarvis-lifeops/tests/test_relevance.py:76:    assert r.json()["classification"]["privacy_class"] == "C"
+origin/main:jarvis-lifeops/tests/test_relevance.py:85:    assert b["classification"]["privacy_class"] == "A"
+exit=0

@@ -1,0 +1,10 @@
+# cmd: git grep -n -iE 'sensitivity|body_for_llm' origin/main
+origin/main:jarvis-lifeops/app/db.py:72:            recovery_sensitivity                TEXT NOT NULL DEFAULT 'medium',
+origin/main:jarvis-lifeops/app/models.py:70:    recovery_sensitivity: str = "medium"
+origin/main:jarvis-lifeops/app/models.py:438:    sensitivity_level: str = "S2"
+origin/main:jarvis-lifeops/app/relevance.py:5:Klassifikationsobjekt (homelab_jarvis.md §2.5: privacy_class / sensitivity_level /
+origin/main:jarvis-lifeops/app/relevance.py:67:    sensitivity_level: str = "S2",
+origin/main:jarvis-lifeops/app/relevance.py:172:            "sensitivity_level": sensitivity_level or "S2",
+origin/main:jarvis-lifeops/app/routers/relevance.py:36:        sensitivity_level=body.sensitivity_level,
+origin/main:jarvis-lifeops/seed/profile.yaml:12:  recovery_sensitivity: medium
+exit=0

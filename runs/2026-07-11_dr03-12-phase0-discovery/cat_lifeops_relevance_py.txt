@@ -1,0 +1,182 @@
+# Rohbeleg: cat jarvis-lifeops/app/relevance.py @ docker origin/main 002acea
+"""Relevanz-Engine (commission 2026-07-01, OP-2).
+
+Deterministisch, regel-/lookup-basiert, **KEIN Cloud-LLM**. Berechnet pro Mail die
+Schutz-Marker {frist, termin, persoenlich, dienstlich, unklar} und das VOLLSTÄNDIGE
+Klassifikationsobjekt (homelab_jarvis.md §2.5: privacy_class / sensitivity_level /
+routing_policy / learning_policy / content_logging) mit den festen Kopplungen.
+
+Beweise-sauber: nur wenn KEIN Schutz-Marker feuert (und confidence ausreicht), ist
+eine Mail ``auto_eligible``. ``dienstlich`` ist konservativ (Über-Blocken gewollt):
+dienstlich ⇒ privacy_class C ⇒ routing=blocked, learning=none, logging=none.
+
+Der Persona-Rohinhalt verlässt lifeops nie — nur abgeleitete Marker/Klasse gehen raus
+(``reasons`` enthalten nur generische Begründungen, keine Persona-Werte).
+"""
+from __future__ import annotations
+
+import json
+from typing import Any
+
+DEFAULT_THRESHOLD = 0.75
+
+# personenbezogene Kategorien -> privacy_class A (auch ohne persönlich-Marker).
+PERSONAL_CATEGORIES = {"Account / Sicherheit", "Bank", "Steuer"}
+
+# u037-Contract (P0.4, bestaetigt gegen den Live-Export): ein Temporal-Signal ist
+# ein Objekt mit mind. einem dieser Schluessel (temporal_resolution.*). Ein Signal
+# ohne einen dieser Schluessel gilt als malformed -> Fail-Safe (unklar).
+TEMPORAL_CONTRACT_KEYS = {"type", "date", "start_datetime", "end_datetime"}
+_SOURCE_DOWN = {"down", "unavailable", "error", "missing"}
+
+
+def _temporal_malformed(signals: list) -> bool:
+    for s in (signals or []):
+        if isinstance(s, str):
+            continue  # legacy string-Signal ok
+        if isinstance(s, dict):
+            if not (set(s.keys()) & TEMPORAL_CONTRACT_KEYS):
+                return True
+        else:
+            return True
+    return False
+
+
+# §2.5 feste Kopplung je privacy_class: (routing_policy, learning_policy, content_logging)
+_COUPLING = {
+    "C": ("blocked", "none", "none"),
+    "A": ("local_only", "metadata_only", "metadata"),
+    "B": ("manual_cloud_observed", "proposal_allowed", "summary"),
+}
+
+
+def _sig_text(sig: Any) -> tuple[str, dict]:
+    d = sig if isinstance(sig, dict) else {"type": str(sig)}
+    return json.dumps(d, ensure_ascii=False).lower(), d
+
+
+def evaluate_relevance(
+    *,
+    sender_domain: str,
+    sender_addr: str,
+    category: str,
+    confidence: float,
+    temporal_signals: list,
+    subject_signals: list,
+    flags: list,
+    persona: dict,
+    sensitivity_level: str = "S2",
+    threshold: float = DEFAULT_THRESHOLD,
+    source_status: dict | None = None,
+    persona_available: bool = True,
+) -> dict:
+    reasons: list[str] = []
+    domain = (sender_domain or "").lower().strip()
+    addr = (sender_addr or "").lower().strip()
+    subj = " ".join(str(s) for s in (subject_signals or [])).lower()
+
+    work_domains = {str(d).lower().strip() for d in persona.get("work_domains", [])}
+    dienstlich_markers = [str(m).lower() for m in persona.get("dienstlich_markers", [])]
+    protected = persona.get("protected_senders", [])
+    interests = persona.get("interests", [])
+
+    # --- dienstlich (konservativ) ----------------------------------------
+    dienstlich = False
+    if domain and domain in work_domains:
+        dienstlich = True
+        reasons.append("sender domain in work_domains")
+    elif any(mk and (mk in subj or mk in addr or mk in domain) for mk in dienstlich_markers):
+        dienstlich = True
+        reasons.append("dienstlich marker matched")
+
+    # --- frist / termin aus temporal_signals -----------------------------
+    frist = False
+    termin = False
+    for sig in (temporal_signals or []):
+        text, d = _sig_text(sig)
+        t = str(d.get("type", "")).lower()
+        if t in ("frist", "deadline") or d.get("date") or "frist" in text or "ablauf" in text or "bis " in text:
+            frist = True
+        if t in ("termin", "appointment") or d.get("start_datetime") or d.get("end_datetime") or "uhr" in text:
+            termin = True
+
+    # --- persoenlich / protected sender ----------------------------------
+    persoenlich = False
+    protected_sender = False
+    for ps in protected:
+        m = str(ps.get("match", "")).lower().strip()
+        if m and (m == addr or m == domain or (addr and m in addr) or (domain and m in domain)):
+            persoenlich = True
+            protected_sender = True
+            reasons.append("protected sender match")
+            break
+    if not persoenlich and category in PERSONAL_CATEGORIES:
+        # personenbezogene Kategorie zählt als persönliche Relevanz (A), aber kein
+        # protected_sender.
+        pass
+
+    # --- unklar ----------------------------------------------------------
+    unklar = False
+    if confidence < threshold:
+        unklar = True
+        reasons.append(f"confidence {confidence:.2f} < {threshold}")
+
+    # --- do_not_taskify --------------------------------------------------
+    do_not_taskify = False
+    for it in interests:
+        if it.get("do_not_taskify"):
+            topic = str(it.get("topic", "")).lower().strip()
+            if topic and topic in subj:
+                do_not_taskify = True
+                reasons.append("topic in do_not_taskify interests")
+                break
+
+    # --- Fail-Safe-Degradierung (OP-1, degrade-to-restrictive) -----------
+    # Absence-of-signal != absence-of-risk. Faellt eine tragende Quelle aus oder
+    # ist sie malformed, ist die Mail UNBESTIMMBAR -> unklar -> nicht auto-eligibel.
+    ss = source_status or {}
+    if str(ss.get("temporal", "")).lower() in _SOURCE_DOWN or _temporal_malformed(temporal_signals):
+        unklar = True
+        reasons.append("source_unavailable:temporal")
+    if str(ss.get("classifier", "")).lower() in _SOURCE_DOWN or ss.get("classifier") == "malformed" or not category:
+        unklar = True
+        reasons.append("source_unavailable:classifier")
+    if not persona_available or str(ss.get("persona", "")).lower() in _SOURCE_DOWN:
+        # Persona unbekannt -> konservativ dienstlich annehmen (C/blocked) + unklar.
+        unklar = True
+        dienstlich = True
+        reasons.append("source_unavailable:persona")
+
+    # --- classification object (§2.5, feste Kopplung) --------------------
+    if dienstlich:
+        privacy_class = "C"
+    elif persoenlich or category in PERSONAL_CATEGORIES:
+        privacy_class = "A"
+    else:
+        privacy_class = "B"
+    routing_policy, learning_policy, content_logging = _COUPLING[privacy_class]
+
+    auto_eligible = (
+        not (frist or termin or persoenlich or dienstlich or unklar)
+        and confidence >= threshold
+    )
+    if not auto_eligible and not reasons:
+        reasons.append("no protective marker but confidence below threshold")
+
+    return {
+        "markers": {
+            "frist": frist, "termin": termin, "persoenlich": persoenlich,
+            "dienstlich": dienstlich, "unklar": unklar,
+        },
+        "classification": {
+            "privacy_class": privacy_class,
+            "sensitivity_level": sensitivity_level or "S2",
+            "routing_policy": routing_policy,
+            "learning_policy": learning_policy,
+            "content_logging": content_logging,
+        },
+        "protected_sender": protected_sender,
+        "do_not_taskify": do_not_taskify,
+        "auto_eligible": auto_eligible,
+        "reasons": reasons,
+    }

@@ -1,0 +1,104 @@
+# OP-0.1/0.3-Grep homelab-jarvis-workflows @ 579633cfe367e1e49bb9cb70a9f5799ff7b600e2
+# Hinweis: Workflow-JSONs sind Einzeiler -> -c (Treffer je Datei) + Kontextausschnitte statt Vollzeilen
+
+## cmd: git grep -ic 'privacy_class|routing_policy|data_class|datenklasse' origin/main (nur Treffer)
+origin/main:CLAUDE.md:1
+origin/main:examples/jarvis-action-state/app/main.py:6
+origin/main:workflows-staging/jarvis-mail-backfill-dev.json:2
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:4
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:4
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.4.json:2
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.0.json:1
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.1-newsletter.json:1
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.3-vollstaendig.json:2
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.4.json:1
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.5.json:2
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.0.json:1
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.1-newsletter.json:1
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.3-vollstaendig.json:2
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.4.json:1
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.5.json:2
+origin/main:workflows-staging/jarvis-mail-move-eligibility-shadow-v0.1.json:3
+origin/main:workflows/jarvis-mail-backfill-read-only.json:2
+origin/main:workflows/jarvis-mail-intake-read-only.json:4
+origin/main:workflows/jarvis-mail-review-zusammenfassung.json:1
+
+## cmd: git grep -o -iE '.{60}(privacy_class|routing_policy).{100}' origin/main
+origin/main:workflows-staging/jarvis-mail-move-eligibility-shadow-v0.1.json:''}\\n- Marker: ${(chk.markers||[]).join(',')||'keine'}\\n- privacy_class: ${chk.privacy_class||''}`;\nreturn { json: { ntfy_title: 'SHADOW: Mail-Move (eligibel)', ntfy_body
+origin/main:workflows-staging/jarvis-mail-move-eligibility-shadow-v0.1.json:''}\\n- Marker: ${(chk.markers||[]).join(',')||'keine'}\\n- privacy_class: ${chk.privacy_class||''}\\n- Grund: ${reasons.replace(/[^\\x00-\\x7F]/g,'')}`;\nreturn { json: { n
+## cmd: git grep -o -iE '.{60}data_class.{100}' origin/main -- workflows-staging workflows (Kontextausschnitte)
+origin/main:workflows-staging/jarvis-mail-backfill-dev.json:  let action_proposal = \u0027Manuell pr├╝fen\u0027;\n  let data_class = \u0027S2\u0027;\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderf├ñlle zuerst.\n\n
+origin/main:workflows-staging/jarvis-mail-backfill-dev.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-backfill-dev.json:egory)}`,\n    `priority: ${yamlString(m.priority)}`,\n    `data_class: ${yamlString(m.data_class)}`,\n    `confidence: ${yamlString(m.confidence)}`,\n    `paperless_cand
+origin/main:workflows-staging/jarvis-mail-backfill-dev.json:oposal) || \u0027-\u0027}`,\n    `- Datenklasse: ${asText(m.data_class) || \u0027-\u0027}`,\n    `- Konfidenz: ${asText(m.confidence) || \u0027-\u0027}`,\n    \u0027\u002
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:den]'\n  );\n\n  const dataClass = firstNonEmpty(\n    mail.data_class,\n    mail.dataClass,\n    classification.data_class,\n    'unbekannt'\n  );\n\n  const confidence 
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:ategory)}`,\n    `priority: ${yamlString(priority)}`,\n    `data_class: ${yamlString(dataClass)}`,\n    `confidence: ${yamlString(confidence)}`,\n    `has_attachment: ${y
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:den]'\n  );\n\n  const dataClass = firstNonEmpty(\n    mail.data_class,\n    mail.dataClass,\n    classification.data_class,\n    'unbekannt'\n  );\n\n  const confidence 
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.2.json:ategory)}`,\n    `priority: ${yamlString(priority)}`,\n    `data_class: ${yamlString(dataClass)}`,\n    `confidence: ${yamlString(confidence)}`,\n    `has_attachment: ${y
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:den]'\n  );\n\n  const dataClass = firstNonEmpty(\n    mail.data_class,\n    mail.dataClass,\n    classification.data_class,\n    'unbekannt'\n  );\n\n  const confidence 
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:ategory)}`,\n    `priority: ${yamlString(priority)}`,\n    `data_class: ${yamlString(dataClass)}`,\n    `confidence: ${yamlString(confidence)}`,\n    `has_attachment: ${y
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:den]'\n  );\n\n  const dataClass = firstNonEmpty(\n    mail.data_class,\n    mail.dataClass,\n    classification.data_class,\n    'unbekannt'\n  );\n\n  const confidence 
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.3.json:ategory)}`,\n    `priority: ${yamlString(priority)}`,\n    `data_class: ${yamlString(dataClass)}`,\n    `confidence: ${yamlString(confidence)}`,\n    `has_attachment: ${y
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.4.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.4.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.4.json:den]'\n  );\n\n  const dataClass = firstNonEmpty(\n    mail.data_class,\n    mail.dataClass,\n    classification.data_class,\n    'unbekannt'\n  );\n\n  const confidence 
+origin/main:workflows-staging/jarvis-mail-intake-readonly-v0.4.json:ategory)}`,\n    `priority: ${yamlString(priority)}`,\n    `data_class: ${yamlString(dataClass)}`,\n    `confidence: ${yamlString(confidence)}`,\n    `has_attachment: ${y
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.0.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.0.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.1-newsletter.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.1-newsletter.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.3-vollstaendig.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.3-vollstaendig.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.3-vollstaendig.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.3-vollstaendig.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.4.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.4.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.4.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.4.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.5.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.5.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-m-v1.5.json:king'].includes($json.category) ? 'privat' : 'dienstlich'), data_class: $json.data_class, body_text: $json.snippet, message_key: $json.message_key, account_id: $json.acco
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.0.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.0.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.1-newsletter.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.1-newsletter.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.3-vollstaendig.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.3-vollstaendig.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.3-vollstaendig.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.3-vollstaendig.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.4.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.4.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.4.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.4.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.5.json:'normal';\n  let action_proposal = 'Manuell prüfen';\n  let data_class = 'S2';\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderfälle zuerst.\n\n  if (isRea
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.5.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows-staging/jarvis-mail-klassifizierung-dispatch-matthias-v1.5.json:king'].includes($json.category) ? 'privat' : 'dienstlich'), data_class: $json.data_class, body_text: $json.snippet, message_key: $json.message_key, account_id: $json.acco
+origin/main:workflows/jarvis-mail-backfill-read-only.json:  let action_proposal = \u0027Manuell pr├╝fen\u0027;\n  let data_class = \u0027S2\u0027;\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderf├ñlle zuerst.\n\n
+origin/main:workflows/jarvis-mail-backfill-read-only.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows/jarvis-mail-backfill-read-only.json:egory)}`,\n    `priority: ${yamlString(m.priority)}`,\n    `data_class: ${yamlString(m.data_class)}`,\n    `confidence: ${yamlString(m.confidence)}`,\n    `paperless_cand
+origin/main:workflows/jarvis-mail-backfill-read-only.json:oposal) || \u0027-\u0027}`,\n    `- Datenklasse: ${asText(m.data_class) || \u0027-\u0027}`,\n    `- Konfidenz: ${asText(m.confidence) || \u0027-\u0027}`,\n    \u0027\u002
+origin/main:workflows/jarvis-mail-intake-read-only.json:  let action_proposal = \u0027Manuell pr├╝fen\u0027;\n  let data_class = \u0027S2\u0027;\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderf├ñlle zuerst.\n\n
+origin/main:workflows/jarvis-mail-intake-read-only.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows/jarvis-mail-intake-read-only.json:u0027\n  );\n\n  const dataClass = firstNonEmpty(\n    mail.data_class,\n    mail.dataClass,\n    classification.data_class,\n    \u0027unbekannt\u0027\n  );\n\n  const c
+origin/main:workflows/jarvis-mail-intake-read-only.json:ategory)}`,\n    `priority: ${yamlString(priority)}`,\n    `data_class: ${yamlString(dataClass)}`,\n    `confidence: ${yamlString(confidence)}`,\n    `has_attachment: ${y
+origin/main:workflows/jarvis-mail-intake-read-only.json:  let action_proposal = \u0027Manuell pr├╝fen\u0027;\n  let data_class = \u0027S2\u0027;\n  let confidence = 0.55;\n\n  // 1. Spezifische Domain-/Sonderf├ñlle zuerst.\n\n
+origin/main:workflows/jarvis-mail-intake-read-only.json:  category,\n      priority,\n      action_proposal,\n      data_class,\n      confidence,\n      flags,\n      paperless_candidate,\n      paperless_reason,\n      paper
+origin/main:workflows/jarvis-mail-intake-read-only.json:u0027\n  );\n\n  const dataClass = firstNonEmpty(\n    mail.data_class,\n    mail.dataClass,\n    classification.data_class,\n    \u0027unbekannt\u0027\n  );\n\n  const c
+origin/main:workflows/jarvis-mail-intake-read-only.json:ategory)}`,\n    `priority: ${yamlString(priority)}`,\n    `data_class: ${yamlString(dataClass)}`,\n    `confidence: ${yamlString(confidence)}`,\n    `has_attachment: ${y
+origin/main:workflows/jarvis-mail-review-zusammenfassung.json:ormal\u0027;\n\n  const dataClass =\n    asText(frontmatter.data_class) ||\n    extractBulletValue(klassifikation, \u0027Datenklasse\u0027) ||\n    \u0027\u0027;\n\n  con
+origin/main:workflows/jarvis-mail-review-zusammenfassung.json:\n      subject,\n\n      category,\n      priority,\n      data_class: dataClass,\n      confidence,\n\n      has_attachment: hasAttachment,\n      flags,\n\n      paper
+
+## cmd: git grep -c -iE 'relevance|/relevance/evaluate' origin/main
+origin/main:docs/workflow-index.md:1
+origin/main:monitoring/uptime-kuma-relevance-failsafe.yaml:2
+origin/main:workflows-staging/jarvis-mail-move-eligibility-shadow-v0.1.json:1
+
+## cmd: git grep -o -iE '.{60}relevance.{100}' origin/main -- workflows-staging workflows | head -30

@@ -1,0 +1,134 @@
+# Rohbeleg: cat jarvis-action-state/app/mail_move.py @ docker origin/main 002acea
+"""Deterministic, rule-based eligibility gate for reversible mail moves
+(commission 2026-07-01 — Reversible Mail-Aktions-Flotte, Runde 1).
+
+OP-1  `imap_write.move`: MOVE is eligible ONLY when ALL hold — sender on the
+      known-senders/known-shops allowlist, category in {Newsletter, Werbung}, NO
+      hard exclusion marker (Frist/Termin/persönlich/unklar/dienstlich), target in
+      the move whitelist {INBOX.Newsletter, INBOX.Werbung}. The gate is RULE-BASED
+      (allowlist), never LLM — an LLM classification may inform but must never carry
+      the move alone. dienstlich → privacy_class C → blocked from every auto action.
+
+OP-2  `mail.quarantine`: a target guard, never a delete. Only quarantine folders
+      (INBOX.Phishing / INBOX.Quarantine) are valid targets; high confidence →
+      AUTO_INFO (never silent AUTO), uncertain → REVIEW (never auto). Undo = move-back.
+
+Both endpoints are pure decision helpers (no state mutation); the n8n dispatch calls
+them in SHADOW to render a "would move" signal. The allowlist lookup itself is done by
+the caller (dispatch/jarvis-tools) and passed as ``sender_allowlisted`` — the gate
+enforces the deterministic AND-rule.
+"""
+from __future__ import annotations
+
+from fastapi import APIRouter
+from pydantic import BaseModel, Field
+
+router = APIRouter(prefix="/mail", tags=["mail"])
+
+# Category + target whitelists (deterministic).
+# NOTE (P0.4): the live classifier emits the COMBINED category string
+# "Newsletter / Werbung" (see dispatch v1.5). The split "Newsletter"/"Werbung"
+# are accepted as tolerant aliases for the commission's wording + tests.
+MOVE_CATEGORIES = {"Newsletter / Werbung", "Newsletter", "Werbung"}
+MOVE_TARGETS = {"INBOX.Newsletter", "INBOX.Werbung"}
+QUARANTINE_TARGETS = {"INBOX.Phishing", "INBOX.Quarantine"}
+
+# Hard exclusion markers (DE + EN, case-insensitive). ANY hit -> not eligible.
+# GAP (P0.4): these markers are NOT emitted as fields by the current classifier
+# (only category/confidence/flags/data_class exist). The gate ENFORCES any marker
+# it is given, but the dispatch cannot yet populate persönlich/dienstlich. Termin/
+# Frist are covered indirectly (category must be Newsletter/Werbung, not Termin/
+# Kalender). SHADOW-first + the promotion double-gate (≥95% correct) cover the
+# residual risk until the classifier emits these markers. See report P0.4.
+EXCLUSION_MARKERS = {
+    "frist", "deadline",
+    "termin", "appointment",
+    "persönlich", "persoenlich", "personal",
+    "unklar", "unclear",
+    "dienstlich", "business",
+}
+# Markers that additionally imply a business/private data class C.
+CLASS_C_MARKERS = {"dienstlich", "business"}
+
+
+class MoveEligibilityRequest(BaseModel):
+    sender_allowlisted: bool
+    category: str = Field(min_length=1, max_length=64)
+    markers: list[str] = Field(default_factory=list)
+    target_folder: str = Field(min_length=1, max_length=128)
+    # OP-3 (relevance engine, commission 2026-07-01): der Verdict der Relevanz-Engine.
+    # None = nicht ausgewertet (Rückwärtskompatibilität); False = Engine hat einen
+    # Schutz-Marker gesehen -> kein Move (das Gate liest auto_eligible).
+    auto_eligible: bool | None = None
+
+
+def evaluate_move_eligibility(sender_allowlisted: bool, category: str,
+                              markers: list[str], target_folder: str,
+                              auto_eligible: bool | None = None) -> dict:
+    reasons: list[str] = []
+    lowered = {m.lower() for m in markers}
+
+    # Degrade-to-restrictive (OP-3, commission 2026-07-01): the relevance engine's
+    # auto_eligible verdict is REQUIRED. Missing (None) or false -> Move rejected.
+    # Absence of the verdict is treated as failure, never as permission.
+    if auto_eligible is not True:
+        if auto_eligible is False:
+            reasons.append("relevance engine auto_eligible=false (protective marker)")
+        else:
+            reasons.append("auto_eligible not evaluated/abrufbar (degrade-to-restrictive)")
+    if not sender_allowlisted:
+        reasons.append("sender not on known-senders/known-shops allowlist")
+    if category not in MOVE_CATEGORIES:
+        reasons.append(f"category '{category}' not in {sorted(MOVE_CATEGORIES)}")
+    hit = sorted(lowered & EXCLUSION_MARKERS)
+    if hit:
+        reasons.append(f"hard exclusion marker(s): {hit}")
+    if target_folder not in MOVE_TARGETS:
+        reasons.append(f"target '{target_folder}' not in move whitelist {sorted(MOVE_TARGETS)}")
+
+    privacy_class = "C" if (lowered & CLASS_C_MARKERS) else "B"
+    return {
+        "eligible": len(reasons) == 0,
+        "reasons": reasons,
+        "privacy_class": privacy_class,
+        "rule_based": True,
+    }
+
+
+class QuarantineRequest(BaseModel):
+    confidence_level: str = Field(pattern="^(high|uncertain)$")
+    target_folder: str = Field(min_length=1, max_length=128)
+
+
+def evaluate_quarantine(confidence_level: str, target_folder: str) -> dict:
+    # Never a delete: only quarantine folders are valid, and the mapped action is
+    # always a MOVE. Uncertain never goes auto.
+    target_ok = target_folder in QUARANTINE_TARGETS
+    if confidence_level == "high":
+        mode = "AUTO_INFO"        # never silent AUTO for LLM/heuristic detection
+    else:
+        mode = "REVIEW"           # uncertain -> human review, never auto
+    reasons: list[str] = []
+    if not target_ok:
+        reasons.append(f"target '{target_folder}' not a quarantine folder {sorted(QUARANTINE_TARGETS)}")
+    return {
+        "mode": mode,
+        "target_folder": target_folder,
+        "allowed": target_ok,
+        "never_delete": True,
+        "action": "move",
+        "reasons": reasons,
+    }
+
+
+@router.post("/move/eligibility")
+def move_eligibility(body: MoveEligibilityRequest) -> dict:
+    return evaluate_move_eligibility(
+        body.sender_allowlisted, body.category, body.markers, body.target_folder,
+        auto_eligible=body.auto_eligible,
+    )
+
+
+@router.post("/quarantine/evaluate")
+def quarantine_evaluate(body: QuarantineRequest) -> dict:
+    return evaluate_quarantine(body.confidence_level, body.target_folder)

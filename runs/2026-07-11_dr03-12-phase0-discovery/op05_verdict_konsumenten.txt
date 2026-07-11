@@ -1,0 +1,29 @@
+# Konsumenten der Verdicts (eligibility/relevance) @ workflows origin/main 579633c / docker origin/main 002acea
+## cmd (workflows): git grep -c -iE 'eligibility|/relevance' origin/main
+origin/main:docs/workflow-index.md:1
+origin/main:monitoring/uptime-kuma-relevance-failsafe.yaml:1
+origin/main:workflows-staging/jarvis-mail-move-eligibility-shadow-v0.1.json:6
+
+## Shadow-WF jarvis-mail-move-eligibility-shadow-v0.1.json — Node-Inventar (name/type/url):
+Webhook: klassifizierte Mail	n8n-nodes-base.webhook	-
+Relevanz-Engine	n8n-nodes-base.httpRequest	http://jarvis-lifeops:8080/relevance/evaluate
+known-senders laden	n8n-nodes-base.httpRequest	http://jarvis-tools:8080/config/known-senders
+known-shops laden	n8n-nodes-base.httpRequest	http://jarvis-tools:8080/config/known-shops
+Allowlist-Check	n8n-nodes-base.code	-
+Gate: /mail/move/eligibility	n8n-nodes-base.httpRequest	http://jarvis-action-state:8093/mail/move/eligibility
+SHADOW: eligibel?	n8n-nodes-base.switch	-
+Signal eligibel	n8n-nodes-base.code	-
+Signal nicht eligibel	n8n-nodes-base.code	-
+ntfy SHADOW Signal	n8n-nodes-base.httpRequest	http://192.168.30.34:8080/HomeLab
+
+## cmd (docker): git grep -n -iE 'eligibility' origin/main -- jarvis-action-state | head -20
+origin/main:jarvis-action-state/app/mail_move.py:1:"""Deterministic, rule-based eligibility gate for reversible mail moves
+origin/main:jarvis-action-state/app/mail_move.py:53:class MoveEligibilityRequest(BaseModel):
+origin/main:jarvis-action-state/app/mail_move.py:64:def evaluate_move_eligibility(sender_allowlisted: bool, category: str,
+origin/main:jarvis-action-state/app/mail_move.py:123:@router.post("/move/eligibility")
+origin/main:jarvis-action-state/app/mail_move.py:124:def move_eligibility(body: MoveEligibilityRequest) -> dict:
+origin/main:jarvis-action-state/app/mail_move.py:125:    return evaluate_move_eligibility(
+origin/main:jarvis-action-state/app/promotion.py:15:  * `gate_met` implies `eligible_class` (eligibility is folded into the gate) so that
+origin/main:jarvis-action-state/app/promotion.py:144:def compute_eligibility(row, proposed_mode: str) -> tuple[bool, list[str]]:
+origin/main:jarvis-action-state/app/promotion.py:233:    # --- eligibility (hard) ----------------------------------------------
+origin/main:jarvis-action-state/app/promotion.py:234:    eligible, elig_reasons = compute_eligibility(row, proposed_mode)

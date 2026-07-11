@@ -1,0 +1,96 @@
+# OP-0.2 Cortex-Artefakte @ docker origin/main 002acea / workflows origin/main 579633c
+## cmd (docker): git grep -n -iE 'cortex|u039|/classify|routing_log' origin/main
+exit=1 (1 = keine Treffer)
+
+## cmd (workflows): git grep -c -iE 'cortex|u039|/classify|routing_log' origin/main
+exit=1 (1 = keine Treffer)
+
+## Compose-Services (docker): git grep -l 'compose' + Service-Namen aus allen compose*.yml:
+--- authentik/compose.yml
+  postgresql:
+  server:
+  worker:
+  authentik:
+  traefik:
+--- healthchecks/docker-compose.yml
+  healthchecks:
+  proxy:
+--- jarvis-action-state/compose.yml
+  jarvis-action-state:
+  jarvis_backend:
+  proxy:
+--- jarvis-artifact-intake/compose.yml
+  jarvis-artifact-intake:
+  proxy:
+  jarvis_backend:
+--- jarvis-caldav-reader/compose.yml
+  jarvis-caldav-reader:
+  proxy:
+  jarvis_backend:
+--- jarvis-caldav-writer/compose.yml
+  jarvis-caldav-writer:
+  jarvis_backend:
+--- jarvis-deck-reader/compose.yml
+  jarvis-deck-reader:
+  proxy:
+  jarvis_backend:
+--- jarvis-filebrowser/compose.yml
+  jarvis-filebrowser:
+  proxy:
+--- jarvis-imap-backfill-reader-m/compose.yml
+  jarvis-imap-backfill-reader-m:
+  n8n-internal:
+--- jarvis-imap-backfill-reader/compose.yml
+  jarvis-imap-backfill-reader:
+  n8n-internal:
+--- jarvis-imap-write-adapter/compose.yml
+  jarvis-imap-write-adapter:
+  jarvis_backend:
+--- jarvis-inbox-receiver/compose.yml
+  jarvis-inbox-receiver:
+  proxy:
+--- jarvis-lifeops/docker-compose.yml
+  jarvis-lifeops:
+  jarvis_backend:
+--- jarvis-nextcloud-task-writer/compose.yml
+  jarvis-nextcloud-task-writer:
+  jarvis_backend:
+--- jarvis-tools/compose.yml
+  jarvis-tools:
+  proxy:
+  jarvis_backend:
+--- litellm/compose.yml
+  litellm:
+  litellm-db:
+  litellm_db_data:
+  proxy:
+  litellm_internal:
+--- n8n/compose.yml
+  postgres:
+  n8n:
+  proxy:
+  jarvis_backend:
+  n8n-internal:
+--- open-webui/compose.yml
+  open-webui:
+  proxy:
+--- ops-dashboard/compose.yaml
+  ops-dashboard:
+  ops-dashboard-data:
+  proxy:
+  ops-dashboard-internal:
+  jarvis_backend:
+--- searxng/compose.yml
+  searxng:
+  proxy:
+  searxng-internal:
+--- traefik/docker-compose.yml
+  traefik:
+  proxy:
+--- wallos/compose.yml
+  wallos:
+  wallos-internal:
+  proxy:
+--- whoami/docker-compose.yml
+  whoami:
+  proxy:

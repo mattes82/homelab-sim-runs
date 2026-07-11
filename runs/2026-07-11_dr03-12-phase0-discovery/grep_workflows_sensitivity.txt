@@ -1,0 +1,3 @@
+# cmd: git grep -n -iE 'sensitivity|body_for_llm' origin/main
+origin/main:tests/test_u018pre_note_intent.py:6:extract_only output (or trigger the sensitivity gate, which skips extraction).
+exit=0

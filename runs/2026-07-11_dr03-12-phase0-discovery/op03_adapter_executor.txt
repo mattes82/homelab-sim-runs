@@ -1,0 +1,6 @@
+# OP-0.3 Adapter/Executor-Datenklassen-Prüfung @ docker origin/main 002acea
+## cmd: git grep -n -iE 'privacy_class|routing_policy|data_class|sensitivity' origin/main -- jarvis-imap-write-adapter jarvis-nextcloud-task-writer jarvis-caldav-writer jarvis-tools jarvis-inbox-receiver jarvis-artifact-intake
+exit=1 (1 = keine Treffer)
+
+## Executor (workflows-Repo, jarvis-action-executor-v1.1.json): grep -c auf dieselben Muster
+exit=1 (1 = keine Treffer)

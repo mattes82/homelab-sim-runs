@@ -1,0 +1,109 @@
+# action-state: Durchsetzung auf data_class? @ docker origin/main 002acea
+## cmd: git grep -n "data_class" origin/main -- jarvis-action-state/app/
+origin/main:jarvis-action-state/app/mail_move.py:37:# (only category/confidence/flags/data_class exist). The gate ENFORCES any marker
+origin/main:jarvis-action-state/app/main.py:182:    data_class: str = Field(default="B", max_length=4)
+origin/main:jarvis-action-state/app/main.py:193:    data_class: str
+origin/main:jarvis-action-state/app/main.py:357:              data_class  TEXT NOT NULL DEFAULT 'B',
+origin/main:jarvis-action-state/app/main.py:529:        data_class=row["data_class"],
+origin/main:jarvis-action-state/app/main.py:1353:            (proposal_id, action_type, summary, decided_at, decided_by, data_class, tags_json)
+origin/main:jarvis-action-state/app/main.py:1362:                payload.data_class,
+origin/main:jarvis-action-state/app/promotion.py:27:  class_c_touches     <- memory_decisions.data_class='C' (PROXY — best available)
+origin/main:jarvis-action-state/app/promotion.py:67:    "class_c_touches: derived from memory_decisions.data_class='C' (proxy).",
+origin/main:jarvis-action-state/app/promotion.py:226:        "SELECT COUNT(*) AS n FROM memory_decisions WHERE action_type = ? AND data_class = 'C'",
+origin/main:jarvis-action-state/app/promotion.py:471:        "SELECT COUNT(*) AS n FROM memory_decisions WHERE action_type = ? AND data_class = 'C'",
+
+## Kontext promotion.py compute_eligibility (Zeilen 140-170, git show | sed):
+        (tool_name, source),
+    ).fetchone()
+
+
+def compute_eligibility(row, proposed_mode: str) -> tuple[bool, list[str]]:
+    """Hard structural gate (Rules of Engagement 1.4). Not overridable."""
+    reasons: list[str] = []
+    if not row["reversible"]:
+        reasons.append("not fully reversible")
+    if not row["undo_supported"]:
+        reasons.append("no undo support")
+    if row["touches_money"]:
+        reasons.append("touches money")
+    if row["external_comm"]:
+        reasons.append("external communication")
+    if row["performs_delete"]:
+        reasons.append("performs delete")
+    if row["ceiling_risk_class"] == "HARD_STOP":
+        reasons.append("ceiling risk class HARD_STOP")
+    if proposed_mode not in AUTONOMY_MODES:
+        reasons.append(f"target mode {proposed_mode} is not an autonomy mode")
+    return (len(reasons) == 0, reasons)
+
+
+def compute_gate(conn, tool_name: str, source: str) -> dict[str, Any]:
+    """Compute the double-gate evidence for one (action_type, source)."""
+    row = _get_policy_row(conn, tool_name, source)
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"no policy for {tool_name}/{source}")
+
+    start_mode = _effective(row["pol_start_mode"], row["tool_start_mode"])
+    target_mode = _effective(row["pol_target_mode"], row["tool_target_mode"])
+    proposed_mode = target_mode
+
+    # --- evidence signals -------------------------------------------------
+    verdict_rows = conn.execute(
+
+## Kontext promotion.py class_c_touches-Verwendung (Zeilen 220-240):
+        "FROM memory_action_history WHERE action_type = ?",
+        (tool_name,),
+    ).fetchone()
+    h_tot = hist["tot"] or 0
+    h_ref = hist["wref"] or 0
+    source_ref_rate = (h_ref / h_tot) if h_tot else 1.0
+
+    class_c = conn.execute(
+        "SELECT COUNT(*) AS n FROM memory_decisions WHERE action_type = ? AND data_class = 'C'",
+        (tool_name,),
+    ).fetchone()["n"]
+    policy_violations = 0  # GAP — see DATA_GAPS; live coverage via degradation guard
+
+    rare = cases < GATE_MIN_CASES
+
+    # --- eligibility (hard) ----------------------------------------------
+    eligible, elig_reasons = compute_eligibility(row, proposed_mode)
+
+    # --- blocking reasons -------------------------------------------------
+    blocking: list[str] = []
+    if not eligible:
+        blocking.extend(f"not eligible: {r}" for r in elig_reasons)
+    if cases < GATE_MIN_CASES:
+
+## promotion.py Blocking-Logik nach class_c (Zeilen 240-270):
+    if cases < GATE_MIN_CASES:
+        blocking.append(f"only {cases} evaluated cases (need >= {GATE_MIN_CASES})")
+    if days_in_mode < GATE_MIN_DAYS:
+        blocking.append(f"only {days_in_mode:.1f}d in current mode (need >= {GATE_MIN_DAYS})")
+    if cases == 0:
+        blocking.append("no evaluated cases")
+    elif correct_rate < GATE_MIN_CORRECT:
+        blocking.append(f"correct_rate {correct_rate:.2f} < {GATE_MIN_CORRECT}")
+    if undo_rate >= GATE_MAX_UNDO_RATE:
+        blocking.append(f"undo_rate {undo_rate:.2%} >= 5%")
+    if adapter_errors > 0:
+        blocking.append(f"{adapter_errors} unexplained adapter errors (need 0)")
+    if expired_rate >= GATE_MAX_EXPIRED_RATE:
+        blocking.append(f"expired-without-interaction {expired_rate:.2%} >= 20%")
+    if source_ref_rate < 1.0:
+        blocking.append(f"source_ref coverage {source_ref_rate:.2%} < 100%")
+    if class_c > 0:
+        blocking.append(f"{class_c} class-C data touches (need 0)")
+    if policy_violations > 0:
+        blocking.append(f"{policy_violations} policy violations (need 0)")
+
+    gate_met = len(blocking) == 0
+
+    current_mode = f"{start_mode}({row['mode']})"
+    return {
+        "action_type": tool_name,
+        "source": source,
+        "current_mode": current_mode,
+        "start_mode": start_mode,
+        "proposed_mode": proposed_mode,
+        "cases": cases,

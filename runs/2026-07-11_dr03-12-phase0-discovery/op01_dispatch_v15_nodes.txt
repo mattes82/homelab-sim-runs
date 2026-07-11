@@ -1,0 +1,45 @@
+# OP-0.1 Node-Inventar jarvis-mail-klassifizierung-dispatch-m-v1.5.json @ origin/main 579633c
+# cmd: jq '.nodes[] | {name, type, url: .parameters.url}'
+Email Trigger (IMAP)	n8n-nodes-base.emailReadImap	-
+Mail minimieren	n8n-nodes-base.code	-
+Mail klassifizieren	n8n-nodes-base.code	-
+Test-Mail erzeugen	n8n-nodes-base.code	-
+Manueller Teststart	n8n-nodes-base.manualTrigger	-
+Dispatch: Kategorie	n8n-nodes-base.switch	-
+Execute Tracking	n8n-nodes-base.executeWorkflow	-
+Confidence Filter Newsletter	n8n-nodes-base.code	-
+Move zu Newsletter	n8n-nodes-base.httpRequest	http://localhost:5678/webhook/jarvis-action-dispatch
+ntfy Newsletter Push	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab
+Paperless Gate	n8n-nodes-base.code	-
+Shop-Liste laden	n8n-nodes-base.httpRequest	http://jarvis-tools.lan/config/known-shops
+Domain-Check	n8n-nodes-base.code	-
+Domain bekannt?	n8n-nodes-base.switch	-
+LLM-Bestätigung	n8n-nodes-base.httpRequest	http://litellm.lan/v1/chat/completions
+LLM-Antwort prüfen	n8n-nodes-base.code	-
+LLM-Ergebnis?	n8n-nodes-base.switch	-
+Forward zu Paperless	n8n-nodes-base.httpRequest	http://localhost:5678/webhook/jarvis-action-dispatch
+ntfy Rechnung weitergeleitet	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab
+Nextcloud Task Rechnung	n8n-nodes-base.httpRequest	http://localhost:5678/webhook/jarvis-action-dispatch
+ntfy Rechnung unbekannt	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab-Kritisch
+Phishing Payload	n8n-nodes-base.code	-
+ntfy Phishing Push	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab-Kritisch
+Nextcloud Task Phishing	n8n-nodes-base.httpRequest	http://localhost:5678/webhook/jarvis-action-dispatch
+Account Payload	n8n-nodes-base.code	-
+ntfy Account Push	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab-Kritisch
+Abo Payload	n8n-nodes-base.code	-
+Nextcloud Task Abo	n8n-nodes-base.httpRequest	http://localhost:5678/webhook/jarvis-action-dispatch
+ntfy Abo Push	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab
+ntfy Sonstige Push	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab
+Paperless Gate IF	n8n-nodes-base.if	-
+ntfy Shadow Dokument	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab
+Nextcloud Task Dokument	n8n-nodes-base.httpRequest	http://localhost:5678/webhook/jarvis-action-dispatch
+Nextcloud Task Termin	n8n-nodes-base.httpRequest	http://localhost:5678/webhook/jarvis-action-dispatch
+ntfy Retoure Push	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab
+Normalisierung Kategorie	n8n-nodes-base.code	-
+ntfy Dispatch-Transport-Fehler	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab-Kritisch
+Dispatch-Transport-Stop	n8n-nodes-base.stopAndError	-
+known-senders laden	n8n-nodes-base.httpRequest	http://jarvis-tools:8080/config/known-senders
+known-sender Pre-Filter	n8n-nodes-base.code	-
+Kategorie unbekannt?	n8n-nodes-base.if	-
+ntfy Kategorie unbekannt	n8n-nodes-base.httpRequest	http://ntfy.lan/HomeLab
+Trigger u037 Intent Extraction	n8n-nodes-base.httpRequest	http://127.0.0.1:5678/webhook/u037-intent-to-proposal

@@ -1,0 +1,22 @@
+# Randbefund: u018pre (Notiz-Intent, NICHT Mail/u037) — einzige Repo-Fundstelle eines 'sensitivity gate'
+## cmd: git grep -o -iE '.{80}sensitiv.{120}' origin/main -- workflows-staging/u018pre-note-intent-v01.json tests/test_u018pre_note_intent.py tools/
+origin/main:workflows-staging/u018pre-note-intent-v01.json:shops.json).\nconst sd = $getWorkflowStaticData('global');\nconst KEYWORDS = sd.sensitive_keywords || [\"mandant\", \"kunde\", \"kundin\", \"vertrag\", \"vertragsdetails\", \"gehalt\", \"lohn\", \"kündigung\"
+origin/main:workflows-staging/u018pre-note-intent-v01.json:nconst idem = crypto.createHash('sha256').update(capture.capture_id+'|note.file|sensitive','utf8').digest('hex');\nconst store_request = { idempotency_key: idem, action_type:'note.file', tool_name:'note.file'
+origin/main:workflows-staging/u018pre-note-intent-v01.json:EST', trigger_source:'note.capture', correlation_id:null,\n  payload: { reason:'sensitive', text:capture.text, target_options:['nextcloud_notes','memory'], suggested_target:'memory', hint:'manuell einordnen' 
+origin/main:workflows-staging/u018pre-note-intent-v01.json:ure.capture_id, source:capture.source, received_at:capture.received_at, reason:'sensitive' } };\nconst open_loop = { action_type:'note.file', summary:('REVIEW Notiz manuell einordnen: '+capture.text).slice(0,
+origin/main:workflows-staging/u018pre-note-intent-v01.json:ow hinzufuegen (1 Zeile).\\n\\n**Klassen-Gate:** Keyword-Heuristik (Static-Data sensitive_keywords, analog known-shops.json). Treffer -> KEINE Cloud-Extraktion, REVIEW-Proposal note.file. Nur Nicht-sensible N
+exit-Hinweis: Treffer oben
+
+## cmd: git grep -n -iE 'S3|sensitiv' origin/main -- tools/ | head -20
+origin/main:tools/u018pre_note_intent.py:55:DEFAULT_SENSITIVE_KEYWORDS = [
+origin/main:tools/u018pre_note_intent.py:73:def is_sensitive(text: str, keywords) -> bool:
+origin/main:tools/u018pre_note_intent.py:126:    (sensitive). Trägt Zielvorschlag (Nextcloud-Ordner ODER Memory-Eintrag)."""
+origin/main:tools/u018pre_note_intent.py:146:            "hint": "manuell einordnen" if reason == "sensitive" else "Ablage/Referenz – keine Aufgabe",
+origin/main:tools/u018pre_note_intent.py:214:    mode = 'sensitive' (Gate-Treffer, keine Extraktion) | 'mapped'.
+origin/main:tools/u018pre_note_intent.py:217:    if is_sensitive(capture.get("text", ""), keywords):
+origin/main:tools/u018pre_note_intent.py:219:            "mode": "sensitive",
+origin/main:tools/u018pre_note_intent.py:220:            "proposals": [_note_proposal(capture, "sensitive", "REVIEW")],
+origin/main:tools/u018pre_note_intent.py:256:        return data.get("keywords", list(DEFAULT_SENSITIVE_KEYWORDS)), False
+origin/main:tools/u018pre_note_intent.py:264:            "(case-insensitive substring). Treffer → KEINE Cloud-Extraktion, "
+origin/main:tools/u018pre_note_intent.py:268:        "keywords": list(DEFAULT_SENSITIVE_KEYWORDS),
+origin/main:tools/u018pre_note_intent.py:272:    return list(DEFAULT_SENSITIVE_KEYWORDS), True

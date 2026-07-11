@@ -1,0 +1,96 @@
+# OP-0.1 Kern-Nodes dispatch-m-v1.5 @ workflows origin/main 579633c (jq-Extraktion aus Einzeiler-JSON)
+
+## Node 'Trigger u037 Intent Extraction' (.parameters.jsonBody):
+={{ JSON.stringify({ subject: $json.subject, sender_class: (['Newsletter','Tracking'].includes($json.category) ? 'privat' : 'dienstlich'), data_class: $json.data_class, body_text: $json.snippet, message_key: $json.message_key, account_id: $json.account_id, received_at: $json.received_at, has_attachment: $json.has_attachment }) }}
+
+## Node 'LLM-Bestätigung' (url + jsonBody):
+http://litellm.lan/v1/chat/completions
+={{ JSON.stringify({ model: 'cloud-fast-claude', max_tokens: 10, messages: [{ role: 'user', content: 'Ist die folgende Mail eine bezahlte Rechnung oder Quittung? Antworte nur: JA oder NEIN. Betreff: ' + $('Mail klassifizieren').first().json.subject + ' Inhalt: ' + $('Mail klassifizieren').first().json.snippet }] }) }}
+
+## Node 'Paperless Gate' (jsCode):
+const item = $input.first().json;
+if (item.paperless_candidate === true) {
+  return [{ json: item }];
+}
+return [];
+## Node 'Mail klassifizieren' (jsCode) — data_class-Vorkommen (grep -n auf extrahiertem Code):
+314:  let data_class = 'S2';
+617:      data_class,
+
+## Kontext um Zeile 314 (sed -n '310,320p') — data_class wird konstant 'S2' gesetzt, keine weitere Zuweisung im gesamten Node-Code:
+
+  let category = 'Allgemein';
+  let priority = 'normal';
+  let action_proposal = 'Manuell prüfen';
+  let data_class = 'S2';
+  let confidence = 0.55;
+
+  // 1. Spezifische Domain-/Sonderfälle zuerst.
+
+  if (isRealEstateRelevantDomain) {
+    category = 'Allgemein';
+## Gegenprobe: alle Zuweisungen an data_class (grep -n 'data_class *='):
+314:  let data_class = 'S2';
+## Gesamtzeilen Node-Code:
+627 /tmp/claude-1001/-root/452b1f95-4cf8-47b6-98d3-ad8e679bd702/scratchpad/mail-klassifizieren.js
+
+## OP-0.1 implizite Listen: Node 'known-sender Pre-Filter' (jsCode, dispatch-m-v1.5):
+// known-sender Pre-Filter — Klassifikator v1.5
+// Laeuft NACH dem HTTP-Node 'known-senders laden'; $json ist daher die
+// known-senders-Map, nicht die Mail. Mail-Daten daher explizit aus
+// 'Mail klassifizieren' referenzieren. Feldname der Absenderdomain: from_domain.
+const FROM_DOMAIN_FIELD = "from_domain";
+
+const knownSenders = $('known-senders laden').first().json || {};
+const mail = $('Mail klassifizieren').first().json;
+const fromDomain = String(mail[FROM_DOMAIN_FIELD] || "").toLowerCase().trim();
+
+const matchedCategory = knownSenders[fromDomain] || null;
+const isMatch = matchedCategory !== null;
+
+return [{
+  json: {
+    ...mail,
+    _known_sender_match: isMatch,
+    _known_sender_category: matchedCategory,
+    // Bei known-sender-Treffer den Paperless-Branch umgehen, damit der Override
+    // den Dispatch-Switch erreicht (Pre-Filter hat Vorrang vor der Heuristik).
+    paperless_candidate: isMatch ? false : mail.paperless_candidate,
+  }
+}];
+
+
+## Zwillings-Check matthias-v1.5: LLM-Bestätigung + u037-Trigger identisch? (jq-Extraktion)
+={{ JSON.stringify({ model: 'cloud-fast-claude', max_tokens: 10, messages: [{ role: 'user', content: 'Ist die folgende Mail eine bezahlte Rechnung oder Quittung? Antworte nur: JA oder NEIN. Betreff: ' + $('Mail klassifizieren').first().json.subject + ' Inhalt: ' + $('Mail klassifizieren').first().json.snippet }] }) }}
+={{ JSON.stringify({ subject: $json.subject, sender_class: (['Newsletter','Tracking'].includes($json.category) ? 'privat' : 'dienstlich'), data_class: $json.data_class, body_text: $json.snippet, message_key: $json.message_key, account_id: $json.account_id, received_at: $json.received_at, has_attachment: $json.has_attachment }) }}
+
+## OP-0.1 implizite C-Fänger im Klassifikator? grep -n -iE 'dienstlich|arbeit|work|kanzlei|arzt|gesundheit|steuer|bank|persönlich|persoenlich' mail-klassifizieren.js:
+216:    'steuer',
+217:    'steuerbescheid',
+222:  const bankKeywords = [
+223:    'bank',
+232:    'neues bankkonto',
+422:  // 8. Steuer. Versand/Retoure/Kassenbon dürfen Steuer überstimmen.
+432:    category = 'Steuer';
+434:    action_proposal = 'Steuer-/Bescheidbezug prüfen und ggf. in Paperless übernehmen';
+438:  // 9. Bank. Newsletter muss Bank überstimmen, aber Bankkonto/Anhang muss hoch priorisiert werden.
+440:  const isBankDocument =
+443:      hasAny(txt, bankKeywords) ||
+447:        hasAny(txt, ['bank', 'konto', 'kontoeröffnung', 'kontoeroeffnung', 'iban', 'bic'])
+453:    isBankDocument
+455:    category = 'Bank';
+457:    action_proposal = 'Bank-/Konto-Dokument prüfen und ggf. in Paperless übernehmen';
+544:    category === 'Bank' &&
+549:    paperless_reason = 'Bank-/Konto-Bezug erkannt und Anhang vorhanden.';
+550:    paperless_document_type = 'Bank';
+556:    ['Vertrag', 'Steuer', 'Garantie'].includes(category) &&
+566:      category === 'Steuer' ? 'Steuer' :
+exit=0 (1 = keine Treffer)
+
+## Verkettung zum Cloud-LLM (jq .connections, dispatch-m-v1.5): Paperless Gate -> ... -> LLM-Bestätigung
+Paperless Gate -> Shop-Liste laden
+Shop-Liste laden -> Domain-Check
+Domain-Check -> Domain bekannt?
+Domain bekannt? -> LLM-Bestätigung, Nextcloud Task Rechnung
+LLM-Bestätigung -> LLM-Antwort prüfen
+Paperless Gate IF -> Nextcloud Task Dokument, Normalisierung Kategorie
